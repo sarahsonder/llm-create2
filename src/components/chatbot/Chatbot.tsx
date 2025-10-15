@@ -53,6 +53,12 @@ export default function ChatTab({
     };
   }, [selectedWordIndexes]);
 
+  const openingMessage = {
+    role: Role.LLM,
+    content:
+      "Hello! I'm your assistant for today. I am just ChatGPT, so feel free to use me just as you would in your day-to-day activities. I'm here to help you brainstorm, refine, or analyze blackout poetry as you create your own piece.",
+  };
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -80,6 +86,7 @@ export default function ChatTab({
     setIsLLMLoading(true); // start typing animation
     const newMessages = [
       systemMessage,
+      openingMessage,
       ...strippedMessages,
       { role: Role.ARTIST, content: input },
     ];
@@ -162,14 +169,14 @@ export default function ChatTab({
         className="flex-1 overflow-y-auto w-full p-4 space-y-3"
         ref={chatContainerRef}
       >
-        {messages.length === 0 && (
-          <div className="w-full h-full flex flex-col items-center justify-center">
-            <p className="text-h1 text-lg text-grey">Blackout Assistant</p>
-            <p className="text-main text-grey text-center text-sm ">
-              Start chatting with the assistant
-            </p>
-          </div>
-        )}
+        <div className="py-2 rounded-lg transition-all w-full max-w-3/4 duration-300 ease-out opacity-0 translate-y-2 animate-fade-in self-start text-left">
+          <ReactMarkdown
+            children={openingMessage.content}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[]}
+          />
+        </div>
+
         {messages.map((msg) => (
           <div
             key={msg.id}
