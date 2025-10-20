@@ -1,12 +1,13 @@
 import Survey from "../../components/survey/survey";
 import { useNavigate } from "react-router-dom";
 import PageTemplate from "../../components/shared/pages/page";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { DataContext } from "../../App";
 import { ArtistPostSurveyQuestions } from "../../consts/surveyQuestions";
 import type { SurveyDefinition, Artist } from "../../types";
 import { db } from "../../firebase";
-import { doc, collection, writeBatch } from "firebase/firestore";
+import { doc, collection, writeBatch, deleteDoc } from "firebase/firestore";
+import { globalSaveQueue } from "../../utils/saveQueue";
 import { toaster } from "../../components/ui/toaster";
 
 const ArtistPostSurvey = () => {
@@ -16,9 +17,13 @@ const ArtistPostSurvey = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addPostSurvey } = context;
+  const { userData, addPostSurvey, sessionId, flushSaves, markStep2Complete } =
+    context;
 
   const navigate = useNavigate();
+  useEffect(() => {
+    markStep2Complete(); // marks that poem step has been complete!
+  }, []);
   const submitDb = async (answers: any) => {
     // Add to DB
     const artistRef = doc(collection(db, "artist"));
@@ -62,7 +67,19 @@ const ArtistPostSurvey = () => {
     batch.set(poemRef, poemData);
 
     try {
+      // Ensure any pending autosaves are flushed before final write
+      await flushSaves();
       await batch.commit();
+      // After successful completion, remove incomplete session safely
+      if (sessionId) {
+        await globalSaveQueue.enqueue(async () => {
+          const incompleteRef = doc(
+            collection(db, "incompleteSessions"),
+            sessionId
+          );
+          await deleteDoc(incompleteRef);
+        });
+      }
       toaster.create({
         description: "Survey successfully submitted!",
         type: "success",
