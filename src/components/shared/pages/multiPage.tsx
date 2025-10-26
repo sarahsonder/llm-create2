@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { Textarea } from "@chakra-ui/react";
-import StarTimer from "../starTimer";
 import ChatTab from "../../chatbot/Chatbot";
 import type { Message, Stage } from "../../../types";
 import type { ReactNode } from "react";
@@ -15,6 +14,7 @@ interface PageTemplateProps {
   left?: boolean;
   buttonLeft?: boolean;
   duration?: number;
+  autoRedirectDuration?: number;
   afterDuration?: () => void;
   llmAccess?: boolean;
   stage: Stage;
@@ -35,7 +35,8 @@ function MultiPageTemplate({
   children,
   title,
   description,
-  duration = undefined,
+  duration,
+  autoRedirectDuration,
   afterDuration,
   llmAccess = false,
   stage,
@@ -47,6 +48,8 @@ function MultiPageTemplate({
 }: PageTemplateProps) {
   const [leftWidth, setLeftWidth] = useState(70); // %
   const [topHeight, setTopHeight] = useState(70); // %
+  const [isTimeUp, setIsTimeUp] = useState(false);
+  const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   //   const [isChatOpen, setIsChatOpen] = useState(false); // mobile toggle
 
   const isDraggingX = useRef(false);
@@ -104,6 +107,38 @@ function MultiPageTemplate({
     };
   }, []);
 
+  // timer for showing the continue button
+  useEffect(() => {
+    if (duration && !isTimeUp) {
+      const timeout = setTimeout(() => {
+        setIsTimeUp(true);
+        autoRedirectTimeoutRef.current = setTimeout(() => {
+          if (afterDuration) afterDuration();
+        }, autoRedirectDuration);
+      }, duration * 1000);
+
+      return () => {
+        clearTimeout(timeout);
+      };
+    }
+  }, [duration, isTimeUp, afterDuration, autoRedirectDuration]);
+
+  // timer for auto-direct
+  useEffect(() => {
+    return () => {
+      if (autoRedirectTimeoutRef.current) {
+        clearTimeout(autoRedirectTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleContinueClick = () => {
+    if (autoRedirectTimeoutRef.current) {
+      clearTimeout(autoRedirectTimeoutRef.current);
+    }
+    if (afterDuration) afterDuration();
+  };
+
   return (
     <div className="w-full h-full min-w-96 overflow-hidden">
       {/* Desktop Layout */}
@@ -123,9 +158,6 @@ function MultiPageTemplate({
                 className={`w-full h-max flex text-h1 justify-between items-center flex-row text-h1`}
               >
                 <p>{title}</p>
-                {duration && (
-                  <StarTimer duration={duration} onComplete={afterDuration} />
-                )}
               </div>
 
               <div
@@ -137,6 +169,14 @@ function MultiPageTemplate({
               <div className={`w-full flex overflow-auto py-4 h-max`}>
                 {children}
               </div>
+
+              {isTimeUp && (
+                <div className="w-full flex justify-center py-4">
+                  <Button className="btn-primary" onClick={handleContinueClick}>
+                    Continue
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 

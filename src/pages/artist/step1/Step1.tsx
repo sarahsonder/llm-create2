@@ -43,8 +43,8 @@ const ArtistStep1 = () => {
       poem: artistPoem,
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
-    navigate("/artist/step-2");
-  }, []);
+    navigate("/artist/blackout");
+  }, [addRoleSpecificData, userData?.data?.timeStamps, navigate]);
 
   useEffect(() => {
     sparkMessagesRef.current = sparkMessages;
@@ -56,6 +56,7 @@ const ArtistStep1 = () => {
       title="Step 1: Brainstorm"
       description="This is your time to familiarize yourself with the text and brainstorm for your poem. Feel free to take notes of your ideas. Your notes will be accessible during the writing portion."
       duration={3}
+      autoRedirectDuration={6000}
       afterDuration={onComplete}
       llmAccess={userType == "TOTAL_ACCESS" || userType == "SPARK"}
       stage={Stage.SPARK}

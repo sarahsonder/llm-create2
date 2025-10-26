@@ -50,7 +50,7 @@ const ArtistStep2 = () => {
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
     navigate("/artist/post-survey");
-  }, []);
+  }, [addRoleSpecificData, userData?.data?.timeStamps, navigate]);
 
   useEffect(() => {
     writeMessagesRef.current = writeMessages;
