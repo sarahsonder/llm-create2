@@ -51,12 +51,19 @@ const ArtistStep1 = () => {
     sparkNotesRef.current = sparkNotes;
   }, [sparkMessages, sparkNotes]);
 
+  /**
+   * a note about the timers - `autoRedirectDuration` starts running after `duration` finishes, meaning that
+   * in this case, the users must complete 1 minute of brainstorming and then have 2 minutes before they are
+   * auto-redirected. so the users have a total alloted time of 1-3 minutes to do brainstorming
+   */
   return (
     <MultiPageTemplate
-      title="Step 1: Brainstorm"
-      description="This is your time to familiarize yourself with the text and brainstorm for your poem. Feel free to take notes of your ideas. Your notes will be accessible during the writing portion."
-      duration={30}
+      title="Step 1: Familiarize yourself with the text"
+      description="This is your time to familiarize yourself with the text and brainstorm for your poem. Feel free to take any notes in the text box below. Your notes will be accessible during the writing portion."
+      duration={60} // in seconds
+      autoRedirectDuration={2000} // in milliseconds
       afterDuration={onComplete}
+      buttonText="Begin Writing"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "SPARK"}
       stage={Stage.SPARK}
       messages={sparkMessages}
@@ -65,7 +72,12 @@ const ArtistStep1 = () => {
       setNotes={setSparkNotes}
     >
       <div className="h-full w-full flex">
-        <p className="text-main text-sm md:text-base">{passage}</p>
+        <p
+          className="text-main text-sm md:text-base select-none"
+          onCopy={(e) => e.preventDefault()}
+        >
+          {passage}
+        </p>
       </div>
     </MultiPageTemplate>
   );

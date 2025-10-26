@@ -50,7 +50,7 @@ const ArtistStep2 = () => {
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
     navigate("/artist/post-survey");
-  }, []);
+  }, [addRoleSpecificData, userData?.data?.timeStamps, navigate]);
 
   useEffect(() => {
     writeMessagesRef.current = writeMessages;
@@ -63,6 +63,10 @@ const ArtistStep2 = () => {
     <MultiPageTemplate
       title="Step 2: Blackout"
       description="Create a poem by clicking on words in the passage."
+      duration={180} // in seconds
+      autoRedirectDuration={2000} // in milliseconds
+      afterDuration={onComplete}
+      buttonText="Submit"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "WRITING"}
       stage={Stage.WRITE}
       messages={writeMessages}
@@ -73,7 +77,6 @@ const ArtistStep2 = () => {
     >
       <div className="h-max w-full flex flex-col justify-between">
         <BlackoutPoetry
-          onSubmit={onComplete}
           selectedWordIndexes={selectedWordIndexes}
           setSelectedWordIndexes={setSelectedWordIndexes}
           setPoemSnapshots={setPoemSnapshots}

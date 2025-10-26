@@ -95,6 +95,27 @@ const Captcha = () => {
         poem: artistPoem,
       });
       navigate("/artist/blackout");
+    } else if (inputCaptcha === "control") {
+      addUserData({ role: "artist" });
+      addRoleSpecificData({ condition: ArtistCondition.CONTROL });
+      addRoleSpecificData({
+        timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+      });
+      navigate("/consent");
+    } else if (inputCaptcha === "spark") {
+      addUserData({ role: "artist" });
+      addRoleSpecificData({ condition: ArtistCondition.SPARK });
+      addRoleSpecificData({
+        timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+      });
+      navigate("/consent");
+    } else if (inputCaptcha === "writing") {
+      addUserData({ role: "artist" });
+      addRoleSpecificData({ condition: ArtistCondition.WRITING });
+      addRoleSpecificData({
+        timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+      });
+      navigate("/consent");
     } else if (inputCaptcha === captchaMessage) {
       addUserData({ role: "artist" });
       addRoleSpecificData({ condition: getRandomArtistCondition() });
