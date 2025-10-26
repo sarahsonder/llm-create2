@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import bg1 from "../../../assets/bg1.svg";
-import bg2 from "../../../assets/bg2.svg";
-import bg3 from "../../../assets/bg3.svg";
-import bg4 from "../../../assets/bg4.svg";
-import bg5 from "../../../assets/bg8.svg";
+// import bg1 from "../../../assets/bg1.svg";
+// import bg2 from "../../../assets/bg2.svg";
+// import bg3 from "../../../assets/bg3.svg";
+// import bg4 from "../../../assets/bg4.svg";
+// import bg5 from "../../../assets/bg8.svg";
 import { Button } from "@chakra-ui/react";
 
 interface ScrollPageTemplateProps {
@@ -24,13 +24,13 @@ interface Button {
 }
 
 // Map of available backgrounds
-const BACKGROUNDS: Record<string, string> = {
-  bg1,
-  bg2,
-  bg3,
-  bg4,
-  bg5,
-};
+// const BACKGROUNDS: Record<string, string> = {
+//   bg1,
+//   bg2,
+//   bg3,
+//   bg4,
+//   bg5,
+// };
 
 function ScrollPageTemplate({
   children,
