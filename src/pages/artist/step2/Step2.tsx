@@ -10,6 +10,7 @@ import type {
 } from "../../../types";
 import { useContext } from "react";
 import { DataContext } from "../../../App";
+import { Stage } from "../../../types";
 
 const ArtistStep2 = () => {
   const navigate = useNavigate();
@@ -63,6 +64,7 @@ const ArtistStep2 = () => {
       title="Step 2: Blackout"
       description="Create a poem by clicking on words in the passage."
       llmAccess={userType == "TOTAL_ACCESS" || userType == "WRITING"}
+      stage={Stage.WRITE}
       messages={writeMessages}
       setMessages={setWriteMessages}
       notes={writeNotes}

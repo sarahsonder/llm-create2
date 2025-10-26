@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Textarea } from "@chakra-ui/react";
 import StarTimer from "../starTimer";
 import ChatTab from "../../chatbot/Chatbot";
-import type { Message } from "../../../types";
+import type { Message, Stage } from "../../../types";
 import type { ReactNode } from "react";
 
 import { Button } from "@chakra-ui/react";
@@ -17,7 +17,7 @@ interface PageTemplateProps {
   duration?: number;
   afterDuration?: () => void;
   llmAccess?: boolean;
-
+  stage: Stage;
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   notes: string;
@@ -38,6 +38,7 @@ function MultiPageTemplate({
   duration = undefined,
   afterDuration,
   llmAccess = false,
+  stage,
   messages,
   setMessages,
   notes,
@@ -173,6 +174,7 @@ function MultiPageTemplate({
               <ChatTab
                 messages={messages}
                 setMessages={setMessages}
+                stage={stage}
                 selectedWordIndexes={selectedWordIndexes}
               />
             </div>
