@@ -23,9 +23,9 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
   const words = passageText.split(" ");
   const [viewMode, setViewMode] = useState<"edit" | "blackout">("edit");
 
-  const copyPassage = () => {
-    navigator.clipboard.writeText(passageText);
-  };
+  // const copyPassage = () => {
+  //   navigator.clipboard.writeText(passageText);
+  // };
 
   const toggleSelect = (index: number) => {
     setSelectedWordIndexes((prev) => {
