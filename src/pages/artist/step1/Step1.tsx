@@ -72,7 +72,12 @@ const ArtistStep1 = () => {
       setNotes={setSparkNotes}
     >
       <div className="h-full w-full flex">
-        <p className="text-main text-sm md:text-base">{passage}</p>
+        <p
+          className="text-main text-sm md:text-base select-none"
+          onCopy={(e) => e.preventDefault()}
+        >
+          {passage}
+        </p>
       </div>
     </MultiPageTemplate>
   );

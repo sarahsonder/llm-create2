@@ -63,8 +63,8 @@ const ArtistStep2 = () => {
     <MultiPageTemplate
       title="Step 2: Blackout"
       description="Create a poem by clicking on words in the passage."
-      duration={60} // in seconds
-      autoRedirectDuration={6000} // in milliseconds
+      duration={180} // in seconds
+      autoRedirectDuration={2000} // in milliseconds
       afterDuration={onComplete}
       buttonText="Submit"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "WRITING"}

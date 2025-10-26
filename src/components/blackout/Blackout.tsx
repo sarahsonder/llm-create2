@@ -3,7 +3,6 @@ import { Button } from "@chakra-ui/react";
 import { RiEyeCloseLine } from "react-icons/ri";
 import { MdOutlineMenuBook } from "react-icons/md";
 import { MdOutlineRestartAlt } from "react-icons/md";
-import { MdContentCopy } from "react-icons/md";
 import type { PoemSnapshot } from "../../types";
 
 interface BlackoutProps {
@@ -94,13 +93,13 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
             <MdOutlineRestartAlt />{" "}
             <p className="hidden md:block">Reset poem</p>
           </Button>
-          <Button className="btn-small-inverted" onClick={() => copyPassage()}>
-            <MdContentCopy />
-          </Button>
         </div>
       </div>
 
-      <div className="py-6 leading-relaxed flex flex-wrap">
+      <div
+        className="py-6 leading-relaxed flex flex-wrap select-none"
+        onCopy={(e) => e.preventDefault()}
+      >
         {words.map((word, i) => {
           const isSelected = selectedWordIndexes.includes(i);
 
