@@ -5,6 +5,10 @@ import { DataContext } from "../../../App";
 import { Image } from "@chakra-ui/react";
 import LLMInstructionImage from "../../../assets/llm-example.png";
 
+// ===========================
+// 🚮 TO BE REMOVED
+// ===========================
+
 const LLMInstruction = () => {
   const navigate = useNavigate();
   const context = useContext(DataContext);

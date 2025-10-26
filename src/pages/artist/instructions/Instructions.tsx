@@ -20,7 +20,7 @@ const ArtistInstructions = () => {
   const condition = userData?.data.condition;
 
   const handleSubmit = () => {
-    navigate("/artist/step-1");
+    navigate("/artist/brainstorm");
   };
 
   return (
@@ -49,7 +49,7 @@ const ArtistInstructions = () => {
                   <strong>blacking out words</strong> from an existing piece of
                   text <strong>to create a new poem</strong>.
                 </p>
-                <p className="text-main pt-1">
+                {/* <p className="text-main pt-1">
                   Here are two examples of blackout poetry made using the same
                   piece of text:{" "}
                 </p>
@@ -57,14 +57,14 @@ const ArtistInstructions = () => {
                   <Image
                     alt="Blackout Example 1"
                     src={BlackoutExample1}
-                    className="w-72"
+                    className="w-32"
                   />
                   <Image
                     alt="Blackout Example 2"
                     src={BlackoutExample2}
-                    className="w-72"
+                    className="w-32"
                   />
-                </div>
+                </div> */}
               </div>
             </Collapsible.Content>
           </Collapsible.Root>

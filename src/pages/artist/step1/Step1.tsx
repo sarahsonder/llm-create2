@@ -44,7 +44,7 @@ const ArtistStep1 = () => {
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
     navigate("/artist/blackout");
-  }, [addRoleSpecificData, userData?.data?.timeStamps, navigate]);
+  }, []);
 
   useEffect(() => {
     sparkMessagesRef.current = sparkMessages;

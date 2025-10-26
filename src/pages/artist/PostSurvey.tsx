@@ -1,6 +1,6 @@
-import Survey from "../../components/survey/survey";
+import SurveyScroll from "../../components/survey/surveyScroll";
 import { useNavigate } from "react-router-dom";
-import PageTemplate from "../../components/shared/pages/page";
+import HalfPageTemplate from "../../components/shared/pages/halfPage";
 import { useContext, useEffect } from "react";
 import { DataContext } from "../../App";
 import { ArtistPostSurveyQuestions } from "../../consts/surveyQuestions";
@@ -114,13 +114,12 @@ const ArtistPostSurvey = () => {
   };
 
   return (
-    <PageTemplate
-      title="Post-survey"
-      description="Please fill out the following survey before we wrap things up!"
-      background="bg3"
+    <HalfPageTemplate
+      description="Please fill out the following questions before we wrap things up!"
+      background="bg5"
     >
-      <Survey survey={filteredSurvey} onSubmit={handleSubmit} />
-    </PageTemplate>
+      <SurveyScroll survey={filteredSurvey} onSubmit={handleSubmit} />
+    </HalfPageTemplate>
   );
 };
 

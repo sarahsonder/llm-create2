@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { DataContext } from "../../../App";
 
+// ===========================
+// 🚮 TO BE REMOVED
+// ===========================
+
 const ArtistTransitionStep1 = () => {
   const navigate = useNavigate();
   const context = useContext(DataContext);
