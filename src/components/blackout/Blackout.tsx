@@ -7,8 +7,6 @@ import { MdContentCopy } from "react-icons/md";
 import type { PoemSnapshot } from "../../types";
 
 interface BlackoutProps {
-  onSubmit?: () => void;
-
   selectedWordIndexes: number[];
   setSelectedWordIndexes: React.Dispatch<React.SetStateAction<number[]>>;
 
@@ -16,7 +14,6 @@ interface BlackoutProps {
 }
 
 const BlackoutPoetry: React.FC<BlackoutProps> = ({
-  onSubmit,
   selectedWordIndexes,
   setSelectedWordIndexes,
   setPoemSnapshots,
@@ -101,10 +98,6 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
             <MdContentCopy />
           </Button>
         </div>
-
-        <Button className="btn-small px-4" onClick={onSubmit}>
-          Submit
-        </Button>
       </div>
 
       <div className="py-6 leading-relaxed flex flex-wrap">

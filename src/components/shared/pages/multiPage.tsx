@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Textarea } from "@chakra-ui/react";
+import { Textarea, Button } from "@chakra-ui/react";
 import ChatTab from "../../chatbot/Chatbot";
 import type { Message, Stage } from "../../../types";
 import type { ReactNode } from "react";
-
-import { Button } from "@chakra-ui/react";
 
 interface PageTemplateProps {
   children?: ReactNode;
@@ -15,6 +13,7 @@ interface PageTemplateProps {
   buttonLeft?: boolean;
   duration?: number;
   autoRedirectDuration?: number;
+  buttonText?: string;
   afterDuration?: () => void;
   llmAccess?: boolean;
   stage: Stage;
@@ -38,6 +37,7 @@ function MultiPageTemplate({
   duration,
   autoRedirectDuration,
   afterDuration,
+  buttonText,
   llmAccess = false,
   stage,
   messages,
@@ -158,6 +158,15 @@ function MultiPageTemplate({
                 className={`w-full h-max flex text-h1 justify-between items-center flex-row text-h1`}
               >
                 <p>{title}</p>
+                <Button
+                  className={`btn-small px-4 ${
+                    !isTimeUp ? "pointer-events-none opacity-50" : ""
+                  } font-sans`}
+                  onClick={handleContinueClick}
+                  disabled={!isTimeUp}
+                >
+                  {buttonText}
+                </Button>
               </div>
 
               <div
@@ -169,14 +178,6 @@ function MultiPageTemplate({
               <div className={`w-full flex overflow-auto py-4 h-max`}>
                 {children}
               </div>
-
-              {isTimeUp && (
-                <div className="w-full flex justify-center py-4">
-                  <Button className="btn-primary" onClick={handleContinueClick}>
-                    Continue
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
 
