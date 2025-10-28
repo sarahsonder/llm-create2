@@ -150,12 +150,6 @@ function MultiPageTemplate({
     if (afterDuration) afterDuration();
   };
 
-  const filledGradient = {
-    background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
-    color: "white",
-    transition: "background 0.3s ease",
-  };
-
   return (
     <div className="w-full h-full min-w-96 overflow-hidden">
       {/* Desktop Layout */}
@@ -181,7 +175,9 @@ function MultiPageTemplate({
                   } font-sans`}
                   onClick={handleContinueClick}
                   disabled={!isTimeUp}
-                  style={filledGradient}
+                  style={{
+                    background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
+                  }}
                 >
                   {buttonText}
                 </Button>
