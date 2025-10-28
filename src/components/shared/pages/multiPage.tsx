@@ -49,7 +49,10 @@ function MultiPageTemplate({
   const [leftWidth, setLeftWidth] = useState(70); // %
   const [topHeight, setTopHeight] = useState(70); // %
   const [isTimeUp, setIsTimeUp] = useState(false);
+  const [progress, setProgress] = useState(0);
+
   const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isDraggingX = useRef(false);
   const isDraggingY = useRef(false);
@@ -109,17 +112,26 @@ function MultiPageTemplate({
   // timer for showing the continue button
   useEffect(() => {
     if (duration && !isTimeUp && autoRedirectDuration) {
-      const timeout = setTimeout(() => {
-        setIsTimeUp(true);
-        autoRedirectTimeoutRef.current = setTimeout(() => {
-          if (afterDuration) afterDuration();
-        }, autoRedirectDuration * 1000);
-      }, duration * 1000);
+      const startTime = Date.now();
 
-      return () => {
-        clearTimeout(timeout);
-      };
+      timerRef.current = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const percentageElapsed = Math.min((elapsed / duration) * 100, 100);
+        setProgress(percentageElapsed);
+
+        if (percentageElapsed >= 100) {
+          setIsTimeUp(true);
+          clearInterval(timerRef.current!);
+          autoRedirectTimeoutRef.current = setTimeout(() => {
+            if (afterDuration) afterDuration();
+          }, autoRedirectDuration * 1000);
+        }
+      }, 100);
     }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, [duration, isTimeUp, afterDuration, autoRedirectDuration]);
 
   // timer for auto-direct
@@ -136,6 +148,12 @@ function MultiPageTemplate({
       clearTimeout(autoRedirectTimeoutRef.current);
     }
     if (afterDuration) afterDuration();
+  };
+
+  const filledGradient = {
+    background: `linear-gradient(to right, #242424 ${progress}%, rgba(0,0,0,0.1) ${progress}%)`,
+    color: "white",
+    transition: "background 0.3s ease",
   };
 
   return (
@@ -163,6 +181,7 @@ function MultiPageTemplate({
                   } font-sans`}
                   onClick={handleContinueClick}
                   disabled={!isTimeUp}
+                  style={filledGradient}
                 >
                   {buttonText}
                 </Button>
