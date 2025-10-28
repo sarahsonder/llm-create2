@@ -61,7 +61,7 @@ const ArtistStep2 = () => {
 
   return (
     <MultiPageTemplate
-      title="Step 2: Blackout"
+      title="Step 2: Write your poem"
       description="Create a poem by clicking on words in the passage."
       duration={180}
       autoRedirectDuration={120}

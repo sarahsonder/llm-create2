@@ -50,6 +50,7 @@ function MultiPageTemplate({
   const [topHeight, setTopHeight] = useState(70); // %
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
 
   const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -109,6 +110,17 @@ function MultiPageTemplate({
     };
   }, []);
 
+  const startFadeOut = () => {
+    setIsVisible(false);
+    setTimeout(() => afterDuration?.(), 500); // matches CSS duration
+  };
+
+  useEffect(() => {
+    // fade in on mount
+    const t = setTimeout(() => setIsVisible(true), 50);
+    return () => clearTimeout(t);
+  }, []);
+
   // timer for showing the continue button
   useEffect(() => {
     if (duration && !isTimeUp && autoRedirectDuration) {
@@ -122,8 +134,9 @@ function MultiPageTemplate({
         if (percentageElapsed >= 100) {
           setIsTimeUp(true);
           clearInterval(timerRef.current!);
+
           autoRedirectTimeoutRef.current = setTimeout(() => {
-            if (afterDuration) afterDuration();
+            startFadeOut();
           }, autoRedirectDuration * 1000);
         }
       }, 100);
@@ -147,94 +160,103 @@ function MultiPageTemplate({
     if (autoRedirectTimeoutRef.current) {
       clearTimeout(autoRedirectTimeoutRef.current);
     }
-    if (afterDuration) afterDuration();
+    startFadeOut();
   };
 
   return (
     <div className="w-full h-full min-w-96 overflow-hidden">
-      {/* Desktop Layout */}
-      <div className="flex h-full w-full">
-        {/* Left Panel */}
-        <div
-          className="flex flex-col w-full h-full bg-white"
-          style={{ width: llmAccess ? `${leftWidth}%` : `100%` }}
-        >
-          {/* Main Content */}
+      <div
+        className={`transform transition-all duration-1000 ${
+          isVisible
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none"
+        }`}
+      >
+        {/* Desktop Layout */}
+        <div className="flex h-full w-full">
+          {/* Left Panel */}
           <div
-            className=" overflow-auto w-full p-16 pb-8 md:px-20 md:pt-20"
-            style={{ height: `${topHeight}%` }}
+            className="flex flex-col w-full h-full bg-white"
+            style={{ width: llmAccess ? `${leftWidth}%` : `100%` }}
           >
-            <div className="w-full h-max space-y-4">
-              <div
-                className={`w-full h-max flex text-h1 justify-between items-center flex-row text-h1`}
-              >
-                <p>{title}</p>
-                <Button
-                  className={`btn-small px-4 ${
-                    !isTimeUp ? "pointer-events-none opacity-50" : ""
-                  } font-sans`}
-                  onClick={handleContinueClick}
-                  disabled={!isTimeUp}
-                  style={{
-                    background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
-                  }}
+            {/* Main Content */}
+            <div
+              className=" overflow-auto w-full p-16 pb-8 md:px-20 md:pt-20"
+              style={{ height: `${topHeight}%` }}
+            >
+              <div className="w-full h-max space-y-4">
+                <div
+                  className={`w-full h-max flex text-h1 justify-between items-center flex-row text-h1`}
                 >
-                  {buttonText}
-                </Button>
-              </div>
+                  <p>{title}</p>
+                  <Button
+                    className={`btn-small px-4 ${
+                      !isTimeUp ? "pointer-events-none opacity-50" : ""
+                    } font-sans`}
+                    onClick={handleContinueClick}
+                    disabled={!isTimeUp}
+                    style={{
+                      background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
+                    }}
+                  >
+                    {buttonText}
+                  </Button>
+                </div>
 
-              <div
-                className={`w-full h-max flex text-left text-sm font-sans text-grey`}
-              >
-                <p>{description}</p>
-              </div>
+                <div
+                  className={`w-full h-max flex text-left text-sm font-sans text-grey`}
+                >
+                  <p>{description}</p>
+                </div>
 
-              <div className={`w-full flex overflow-auto py-4 h-max`}>
-                {children}
+                <div className={`w-full flex overflow-auto py-4 h-max`}>
+                  {children}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Divider */}
-          <div
-            className="h-1 bg-gray-300 w-10 self-center cursor-row-resize hover:bg-gray-500"
-            onMouseDown={startDragY}
-            onTouchStart={startDragY}
-          />
-
-          {/* Notes */}
-          <div
-            className="overflow-auto bg-white flex w-full p-16 pt-8 md:px-20 md:pb-20"
-            style={{ height: `${100 - topHeight}%` }}
-          >
-            <Textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Take some notes..."
-              className="text-main bg-white max-h-full flex-1 px-3 py-2 border rounded-md focus:outline-none focus:border-2 focus:border-grey"
-            />
-          </div>
-        </div>
-        {llmAccess && (
-          <>
-            {/* Vertical Divider */}
+            {/* Divider */}
             <div
-              className="w-1 bg-gray-300 h-10 self-center cursor-col-resize hover:bg-gray-500"
-              onMouseDown={startDragX}
-              onTouchStart={startDragX}
+              className="h-1 bg-gray-300 w-10 self-center cursor-row-resize hover:bg-gray-500"
+              onMouseDown={startDragY}
+              onTouchStart={startDragY}
             />
 
-            {/* Chatbot Panel */}
-            <div className="flex-1 p-4 overflow-auto bg-light-grey-4">
-              <ChatTab
-                messages={messages}
-                setMessages={setMessages}
-                stage={stage}
-                selectedWordIndexes={selectedWordIndexes}
+            {/* Notes */}
+            <div
+              className="overflow-auto bg-white flex w-full p-16 pt-8 md:px-20 md:pb-20"
+              style={{ height: `${100 - topHeight}%` }}
+            >
+              <Textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Take some notes..."
+                className="text-main bg-white max-h-full flex-1 px-3 py-2 border rounded-md focus:outline-none focus:border-2 focus:border-grey"
+                style={{ height: "16vh" }}
               />
             </div>
-          </>
-        )}
+          </div>
+          {llmAccess && (
+            <>
+              {/* Vertical Divider */}
+              <div
+                className="w-1 bg-gray-300 h-10 self-center cursor-col-resize hover:bg-gray-500"
+                onMouseDown={startDragX}
+                onTouchStart={startDragX}
+              />
+
+              {/* Chatbot Panel */}
+              <div className="flex-1 p-4 overflow-auto bg-light-grey-4">
+                <ChatTab
+                  messages={messages}
+                  setMessages={setMessages}
+                  stage={stage}
+                  selectedWordIndexes={selectedWordIndexes}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
