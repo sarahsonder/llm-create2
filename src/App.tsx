@@ -76,12 +76,13 @@ function App() {
 
   const completionStatus = (stepsCompleted: number) => {
     const statusMap: Record<number, string> = {
-      0: "started",
-      1: "consent",
-      2: "pre-survey",
-      3: "brainstorm",
-      4: "write",
-      5: "post-survey",
+      1: "captcha",
+      2: "consent",
+      3: "pre-survey",
+      4: "brainstorm-instructions",
+      5: "brainstorm",
+      6: "write",
+      7: "post-survey",
     };
 
     return statusMap[stepsCompleted] || "started";

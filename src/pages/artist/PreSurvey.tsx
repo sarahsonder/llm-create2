@@ -14,9 +14,6 @@ const AristPreSurvey = () => {
   }
 
   const { userData, addPreSurvey, addRoleSpecificData } = context;
-  if (!context) {
-    throw new Error("Component must be used within a DataContext.Provider");
-  }
 
   const handleSubmit = (answers: any) => {
     addRoleSpecificData({

@@ -16,10 +16,13 @@ const ArtistInstructions = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData } = context;
+  const { userData, addRoleSpecificData } = context;
   const condition = userData?.data.condition;
 
   const handleSubmit = () => {
+    addRoleSpecificData({
+      timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+    });
     navigate("/artist/brainstorm");
   };
 
