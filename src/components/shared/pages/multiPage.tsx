@@ -230,7 +230,6 @@ function MultiPageTemplate({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Take some notes..."
               className="text-main bg-white max-h-full flex-1 px-3 py-2 border rounded-md focus:outline-none focus:border-2 focus:border-grey"
-              style={{ height: "16vh" }}
             />
           </div>
         </div>
