@@ -38,20 +38,19 @@ const ConsentForm = () => {
         <div className="w-full h-4/5 border border-dark-grey overflow-y-auto rounded-xl bg-white p-4">
           <p className="text-main mb-2">
             Researchers at the <strong>University of Toronto</strong> are
-            studying how people’s usage of <em>Artificial Intelligence</em>{" "}
+            studying how people's usage of <em>Artificial Intelligence</em>{" "}
             impacts their creative thinking abilities. Nowadays, people are
-            often offloading tedious cognitive tasks to various AI tools to
-            boost productivity and save time. Our project investigates the
-            implications this has on human creativity.
+            often using AI tools for tasks such as writing emails, essays, etc.
+            Our project investigates the implications this has on human
+            creativity.
           </p>
+          {/* Try not to make it scary  */}
           <p className="text-main mb-2">
-            You are invited to participate in this study if you are at least{" "}
-            <strong>18 years of age</strong>. As a participant, you will
-            repeatedly be asked to come up with a word that is somehow related
-            to three seemingly unrelated stimulus words. You will also be asked
-            to provide some demographic information and general thoughts on this
-            survey. By taking part, you will help us better understand how we
-            can guide responsible AI development and usage.
+            As a participant, you will be asked to write a (blackout) poem. You
+            will also be asked to provide some demographic information and
+            general thoughts on this survey. By taking part, you will help us
+            better understand how we can guide responsible AI development and
+            usage in creative contexts.
           </p>
           <p className="text-main mb-2">
             There are no potential risks or preparatory requirements for
