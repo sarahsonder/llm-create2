@@ -1,6 +1,6 @@
 import PageTemplate from "../../../components/shared/pages/page";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { DataContext } from "../../../App";
 
 // ===========================
@@ -15,12 +15,8 @@ const ArtistTransitionStep2 = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addRoleSpecificData, markStep1Complete } = context;
+  const { userData, addRoleSpecificData } = context;
   const condition = userData?.data.condition;
-
-  useEffect(() => {
-    markStep1Complete(); // marks that brainstorm step has been complete!
-  }, []);
 
   const handleSubmit = () => {
     addRoleSpecificData({

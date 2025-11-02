@@ -1,7 +1,7 @@
 import SurveyScroll from "../../components/survey/surveyScroll";
 import { useNavigate } from "react-router-dom";
 import HalfPageTemplate from "../../components/shared/pages/halfPage";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { DataContext } from "../../App";
 import { ArtistPostSurveyQuestions } from "../../consts/surveyQuestions";
 import type { SurveyDefinition, Artist } from "../../types";
@@ -17,13 +17,9 @@ const ArtistPostSurvey = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addPostSurvey, sessionId, flushSaves, markStep2Complete } =
-    context;
+  const { userData, addPostSurvey, sessionId, flushSaves } = context;
 
   const navigate = useNavigate();
-  useEffect(() => {
-    markStep2Complete(); // marks that poem step has been complete!
-  }, []);
   const submitDb = async (answers: any) => {
     // Add to DB
     const artistRef = doc(collection(db, "artist"));
