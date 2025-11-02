@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Button } from "@chakra-ui/react";
-import { RiEyeCloseLine } from "react-icons/ri";
-import { MdOutlineMenuBook } from "react-icons/md";
-import { MdOutlineRestartAlt } from "react-icons/md";
 import type { PoemSnapshot } from "../../types";
+import { MdOutlineUndo } from "react-icons/md";
+import { MdOutlineRedo } from "react-icons/md";
 
 interface BlackoutProps {
   selectedWordIndexes: number[];
   setSelectedWordIndexes: React.Dispatch<React.SetStateAction<number[]>>;
-
   setPoemSnapshots: React.Dispatch<React.SetStateAction<PoemSnapshot[]>>;
 }
 
@@ -20,108 +18,138 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
   const [passageText] = useState(
     "Twilight settled over Zuckerman’s barn, and a feeling of peace. Fern knew it was almost suppertime but she couldn’t bear to leave. Swallows passed on silent wings, in and out of the doorways, bringing food to their young ones. From across the road a bird sang “Whippoorwill, whippoorwill!” Lurvy sat down under an apple tree and lit his pipe; the animals sniffed the familiar smell of strong tobacco. Wilbur heard the trill of the tree toad and the occasional slamming of the kitchen door. All these sounds made him feel comfortable and happy, for he loved life and loved to be a part of the world on a summer evening. But as he lay there he remembered what the old sheep had told him. The thought of death came to him and he began to tremble with fear."
   );
-  const words = passageText.split(" ");
-  const [viewMode, setViewMode] = useState<"edit" | "blackout">("edit");
 
-  // const copyPassage = () => {
-  //   navigator.clipboard.writeText(passageText);
-  // };
+  const words = passageText.split(" ");
+  const [historyIndex, setHistoryIndex] = useState<number>(-1); // Track undo/redo position
+  const [history, setHistory] = useState<PoemSnapshot[]>([]);
 
   const toggleSelect = (index: number) => {
-    setSelectedWordIndexes((prev) => {
-      let newIndexes: number[];
+    const isSelected = selectedWordIndexes.includes(index);
+    const newIndexes = isSelected
+      ? selectedWordIndexes.filter((i) => i !== index)
+      : [...selectedWordIndexes, index];
 
-      if (prev.includes(index)) {
-        // Remove index
-        newIndexes = prev.filter((i) => i !== index);
-      } else {
-        // Add index
-        newIndexes = [...prev, index];
-      }
-
-      return newIndexes;
-    });
+    setSelectedWordIndexes(newIndexes);
 
     const newSnapshot: PoemSnapshot = {
-      action: selectedWordIndexes.includes(index) ? "REMOVE" : "ADD",
+      action: isSelected ? "REMOVE" : "ADD",
       index,
       timestamp: new Date(),
     };
+    setPoemSnapshots((prev) => [...prev, newSnapshot]);
 
-    setPoemSnapshots((prevSnapshots) => [...prevSnapshots, newSnapshot]);
+    // Update history for undo/redo
+    const newHistory = history.slice(0, historyIndex + 1);
+    setHistory([...newHistory, newSnapshot]);
+    setHistoryIndex((prev) => prev + 1);
   };
 
-  const resetSelection = () => {
+  const undo = () => {
+    if (historyIndex < 0) return;
+
+    const snapshot = history[historyIndex];
+
     setSelectedWordIndexes((prev) => {
-      // Create REMOVE actions for each currently selected index
-      const removeSnapshots: PoemSnapshot[] = prev.map((index) => ({
-        action: "REMOVE" as const,
-        index,
-        timestamp: new Date(),
-      }));
-
-      setPoemSnapshots((prevSnapshots) => [
-        ...prevSnapshots,
-        ...removeSnapshots,
-      ]);
-
-      return [];
+      let newIndexes: number[];
+      if (snapshot.action === "ADD") {
+        newIndexes = prev.filter((i) => i !== snapshot.index);
+      } else {
+        newIndexes = [...prev, snapshot.index];
+      }
+      return newIndexes;
     });
+
+    setHistoryIndex((prev) => prev - 1);
+  };
+
+  const redo = () => {
+    if (historyIndex + 1 >= history.length) return;
+
+    const snapshot = history[historyIndex + 1];
+
+    setSelectedWordIndexes((prev) => {
+      let newIndexes: number[];
+      if (snapshot.action === "ADD") {
+        newIndexes = [...prev, snapshot.index];
+      } else {
+        newIndexes = prev.filter((i) => i !== snapshot.index);
+      }
+      return newIndexes;
+    });
+
+    setHistoryIndex((prev) => prev + 1);
   };
 
   return (
-    <div className="w-full h-max flex flex-col space-y-6">
-      <div className="w-full h-max flex flex-row justify-between">
-        <div className="w-max flex flex-row space-x-2">
+    <div className="w-full flex flex-col space-y-6">
+      {/* Top Controls */}
+      <div className="w-full flex flex-row justify-between">
+        <div className="flex flex-row space-x-2">
           <Button
-            className={
-              viewMode === "edit" ? "btn-small-inverted" : "btn-small bg-grey"
-            }
-            onClick={() =>
-              setViewMode(viewMode === "edit" ? "blackout" : "edit")
-            }
+            className="btn-small-inverted"
+            onClick={undo}
+            disabled={historyIndex < 0}
           >
-            {viewMode === "edit" ? <RiEyeCloseLine /> : <MdOutlineMenuBook />}{" "}
-            <p className="hidden md:block">
-              {viewMode === "edit" ? "View as Blackout" : "View as passage"}
-            </p>
+            <MdOutlineUndo />
+            <p className="hidden md:block">Undo</p>
           </Button>
           <Button
             className="btn-small-inverted"
-            onClick={() => resetSelection()}
+            onClick={redo}
+            disabled={historyIndex + 1 >= history.length}
           >
-            <MdOutlineRestartAlt />{" "}
-            <p className="hidden md:block">Reset poem</p>
+            <MdOutlineRedo />
+            <p className="hidden md:block">Redo</p>
           </Button>
         </div>
       </div>
 
-      <div
-        className="py-6 leading-relaxed flex flex-wrap select-none"
-        onCopy={(e) => e.preventDefault()}
-      >
-        {words.map((word, i) => {
-          const isSelected = selectedWordIndexes.includes(i);
+      {/* Two Column View */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
+        {/* Passage Side */}
+        <div
+          className="leading-relaxed flex flex-wrap select-none h-max"
+          onCopy={(e) => e.preventDefault()}
+        >
+          {words.map((word, i) => {
+            const isSelected = selectedWordIndexes.includes(i);
+            const textColor = isSelected
+              ? "text-main text-light-grey-1"
+              : "text-main hover:text-blue-800 hover:underline";
 
-          const textColor =
-            viewMode === "blackout"
-              ? isSelected
-                ? "text-main"
-                : "text-main bg-dark-grey bg-opacity-70"
-              : isSelected
-              ? "text-main text-light-grey-1 underline"
-              : "text-main bg-transparent";
+            return (
+              <span
+                key={i}
+                onClick={() => toggleSelect(i)}
+                className={`cursor-pointer transition px-1 duration-200 ${textColor}`}
+              >
+                {word + " "}
+              </span>
+            );
+          })}
+        </div>
 
-          return (
-            <span
-              key={i}
-              onClick={() => toggleSelect(i)}
-              className={`cursor-pointer transition px-1 duration-200 ${textColor}`}
-            >
-              {word + ` `}
-            </span>
-          );
-        })}
+        {/* Blackout Preview Side */}
+        <div
+          className="leading-relaxed flex flex-wrap select-none h-max"
+          onCopy={(e) => e.preventDefault()}
+        >
+          {words.map((word, i) => {
+            const isSelected = selectedWordIndexes.includes(i);
+            const blackoutStyle = isSelected
+              ? "text-main text-dark-grey"
+              : "text-main text-dark-grey bg-dark-grey";
+
+            return (
+              <span
+                key={i}
+                className={`px-1 transition duration-200 ${blackoutStyle}`}
+              >
+                {word + " "}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
