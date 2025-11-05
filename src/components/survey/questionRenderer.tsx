@@ -4,6 +4,8 @@ import MultipleChoice from "./questions/multipleChoice";
 import OpenEnded from "./questions/openEnded";
 import LikertScale from "./questions/likertScale";
 import TopXRanking from "./questions/topX";
+import CircularMultipleChoice from "./questions/circularMultipleChoice";
+import Range from "./questions/range";
 
 interface Props {
   question: Question;
@@ -24,6 +26,16 @@ const QuestionRenderer: React.FC<Props> = ({ question, value, onChange }) => {
     case "likertScale":
       return (
         <LikertScale question={question} value={value} onChange={onChange} />
+      );
+    case "range":
+      return <Range question={question} value={value} onChange={onChange} />;
+    case "circularChoice":
+      return (
+        <CircularMultipleChoice
+          question={question}
+          value={value}
+          onChange={onChange}
+        />
       );
     case "topXRanking":
       return (

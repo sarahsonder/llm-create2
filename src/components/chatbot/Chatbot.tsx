@@ -30,8 +30,6 @@ The user is tasked with creating a blackout poem from this passage. Your goal is
 
 You MUST use this passage. Do not mention any other text, and always refer to the one given.
 
-Do not write a blackout poem unless the user specifically requests for a poem to be generated.
-
 
 `;
 

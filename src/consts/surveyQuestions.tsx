@@ -10,10 +10,8 @@ export const ArtistPreSurveyQuestions: SurveyDefinition = {
       questions: [
         {
           id: "q1",
-          type: "likertScale",
+          type: "range",
           question: "I am more creative than ____% of humans",
-          scaleMin: 0,
-          scaleMax: 10,
           labels: { min: "0%", max: "100%" },
           required: true,
         },
@@ -298,9 +296,9 @@ export const ArtistPostSurveyQuestions: SurveyDefinition = {
         },
         {
           id: "q15",
-          type: "topXRanking",
+          type: "circularChoice",
           question:
-            "Select and rank your up to 3 emotion that you would like to convey to the audience.",
+            "Select the emotion that best describes what you would like to convey to the audience.",
           options: [
             "Pride",
             "Joy",
@@ -317,7 +315,6 @@ export const ArtistPostSurveyQuestions: SurveyDefinition = {
             "Fear",
             "Anxiety",
           ],
-          maxSelectable: 3,
           required: true,
         },
       ],

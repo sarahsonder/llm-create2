@@ -51,11 +51,26 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
 
     setSelectedWordIndexes((prev) => {
       let newIndexes: number[];
+      let actionType: "ADD" | "REMOVE";
+
       if (snapshot.action === "ADD") {
         newIndexes = prev.filter((i) => i !== snapshot.index);
+        actionType = "REMOVE";
       } else {
         newIndexes = [...prev, snapshot.index];
+        actionType = "ADD";
       }
+
+      // Push to snapshots to record undo
+      setPoemSnapshots((prevSnapshots) => [
+        ...prevSnapshots,
+        {
+          action: actionType,
+          index: snapshot.index,
+          timestamp: new Date(),
+        },
+      ]);
+
       return newIndexes;
     });
 
@@ -69,11 +84,26 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
 
     setSelectedWordIndexes((prev) => {
       let newIndexes: number[];
+      let actionType: "ADD" | "REMOVE";
+
       if (snapshot.action === "ADD") {
         newIndexes = [...prev, snapshot.index];
+        actionType = "ADD";
       } else {
         newIndexes = prev.filter((i) => i !== snapshot.index);
+        actionType = "REMOVE";
       }
+
+      // Push to snapshots to record redo
+      setPoemSnapshots((prevSnapshots) => [
+        ...prevSnapshots,
+        {
+          action: actionType,
+          index: snapshot.index,
+          timestamp: new Date(),
+        },
+      ]);
+
       return newIndexes;
     });
 

@@ -29,7 +29,7 @@ const AristPreSurvey = () => {
 
   return (
     <HalfPageTemplate
-      description="Please fill out the following questions before we begin!"
+      description="Please fill out the following questions before we begin! (Scroll to view all questions)"
       background="bg5"
     >
       <SurveyScroll survey={ArtistPreSurveyQuestions} onSubmit={handleSubmit} />

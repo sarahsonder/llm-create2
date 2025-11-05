@@ -98,6 +98,8 @@ export type QuestionType =
   | "multipleChoice"
   | "openEnded"
   | "likertScale"
+  | "circularChoice"
+  | "range"
   | "topXRanking";
 
 export interface BaseQuestion {
@@ -125,10 +127,22 @@ export interface LikertScaleQuestion extends BaseQuestion {
   labels?: { min: string; max: string };
 }
 
+export interface RangeQuestion extends BaseQuestion {
+  type: "range";
+  labels: { min: string; max: string };
+}
+
+export interface CircularMultipleChoiceQuestion extends BaseQuestion {
+  type: "circularChoice";
+  options: string[];
+}
+
 export type Question =
   | MultipleChoiceQuestion
   | OpenEndedQuestion
   | LikertScaleQuestion
+  | CircularMultipleChoiceQuestion
+  | RangeQuestion
   | TopXRankingQuestion;
 
 export interface Section {

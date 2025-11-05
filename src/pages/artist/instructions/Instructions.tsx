@@ -60,12 +60,12 @@ const ArtistInstructions = () => {
                   <Image
                     alt="Blackout Example 1"
                     src={BlackoutExample1}
-                    className="w-32"
+                    className="w-64"
                   />
                   <Image
                     alt="Blackout Example 2"
                     src={BlackoutExample2}
-                    className="w-32"
+                    className="w-64"
                   />
                 </div>
               </div>
