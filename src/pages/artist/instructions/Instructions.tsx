@@ -35,7 +35,9 @@ const ArtistInstructions = () => {
       <div className="w-full h-full flex-col space-y-6">
         <div className="text-main mb-2">
           In this study, you will be introduced to blackout poetry and write
-          your own poem!
+          your own blackout poem! We will walk you through the whole process,
+          and know that blackout poetry is easier than writing a poem because
+          you are provided with the source material.
           <Collapsible.Root unmountOnExit>
             <Collapsible.Trigger className="text-main underline italic text-light-grey-1 pt-2">
               <div className="flex flex-row items-center space-x-2">
@@ -60,12 +62,12 @@ const ArtistInstructions = () => {
                   <Image
                     alt="Blackout Example 1"
                     src={BlackoutExample1}
-                    className="w-32"
+                    className="w-48"
                   />
                   <Image
                     alt="Blackout Example 2"
                     src={BlackoutExample2}
-                    className="w-32"
+                    className="w-48"
                   />
                 </div>
               </div>
