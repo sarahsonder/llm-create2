@@ -369,6 +369,27 @@ export const ArtistPostSurveyQuestions: SurveyDefinition = {
         },
       ],
     },
+
+    {
+      id: "section7",
+      title: "AI Assistnace",
+      questions: [
+        {
+          id: "q30",
+          type: "multipleChoice",
+          question:
+            "During the my usual writing process I feel like (to be changed)",
+          options: [
+            "I write and the artificial intelligence assists me",
+            "the artificial intelligence writes and I assist",
+            "the artificial intelligence and I contribute to my writing equally",
+            "I do not use artificial intelligence in my writing process",
+          ],
+          required: true,
+        },
+      ],
+    },
+
     {
       id: "section7",
       title: "AI Assistnace",
