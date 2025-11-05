@@ -111,7 +111,7 @@ const ArtistPostSurvey = () => {
 
   return (
     <HalfPageTemplate
-      description="Please fill out the following questions before we wrap things up!"
+      description="Please fill out the following questions before we wrap things up! (Scroll to view all questions)"
       background="bg5"
     >
       <SurveyScroll survey={filteredSurvey} onSubmit={handleSubmit} />
