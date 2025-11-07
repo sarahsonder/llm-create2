@@ -38,6 +38,10 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
         return !!answer;
       case "likertScale":
         return typeof answer === "number";
+      case "range":
+        return answer;
+      case "circularChoice":
+        return answer;
       case "topXRanking":
         return (
           Array.isArray(answer) &&
@@ -78,7 +82,7 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
       </div>
 
       {/* Sections */}
-      <div className="w-full h-full space-y-10 overflow-y-auto">
+      <div className="w-full h-100vh space-y-10 overflow-y-scroll">
         {survey.sections.map((section, index) => (
           <div key={index} className="space-y-6 border-b pb-8">
             {section.description && (

@@ -44,6 +44,13 @@ const Survey: React.FC<Props> = ({ survey, onSubmit }) => {
         case "likertScale":
           return typeof answer === "number";
 
+        case "range":
+          console.log(answer);
+          return typeof answer === "number";
+
+        case "circularChoice":
+          return answer !== "" && answer !== null && answer !== undefined;
+
         case "topXRanking":
           return (
             Array.isArray(answer) &&
@@ -73,7 +80,7 @@ const Survey: React.FC<Props> = ({ survey, onSubmit }) => {
   const progress = Math.round((currentSection / survey.sections.length) * 100);
 
   return (
-    <div className="h-full w-full flex flex-col overflow-y-auto">
+    <div className="h-full w-full flex flex-col overflow-y-scroll">
       <div className="w-full">
         <Progress.Root
           value={progress}
@@ -92,7 +99,7 @@ const Survey: React.FC<Props> = ({ survey, onSubmit }) => {
       )}
       <div
         ref={containerRef}
-        className="flex h-full w-full flex flex-col justify-between overflow-y-auto space-y-6"
+        className="flex h-full w-full flex flex-col justify-between overflow-y-scroll space-y-6"
       >
         <div className="w-full space-y-8">
           {section.questions.map((q) => (
