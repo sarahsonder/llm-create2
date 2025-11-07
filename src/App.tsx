@@ -61,14 +61,12 @@ function App() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const saveTimerRef = useRef<number | null>(null);
-  const [hasPressedBack, setHasPressedBack] = useState(false);
 
   usePreventRefresh(
     "To make sure your session counts, please avoid refreshing the page. Do you still want to refresh?"
   );
   usePreventBack(
-    "To make sure your session counts, please avoid pressing the back button.",
-    setHasPressedBack
+    "To make sure your session counts, please avoid pressing the back button."
   );
 
   // clear session storage and set the session ID on first render
