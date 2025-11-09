@@ -19,8 +19,12 @@ const ArtistPostSurvey = () => {
   const navigate = useNavigate();
   const submitDb = async (answers: any) => {
     // format the data
-    const artistData = userData?.data as Artist;
+    if (!userData || !userData.data) {
+      console.error("userData not loaded yet!");
+      return;
+    }
 
+    const artistData = userData?.data as Artist;
     const survey = artistData.surveyResponse;
     const poem = artistData.poem;
 
