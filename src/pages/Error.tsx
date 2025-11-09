@@ -3,7 +3,7 @@ import PageTemplate from "../components/shared/pages/page";
 const UserError = () => {
   return (
     <PageTemplate background="bg4">
-      <div className="w-full h-full flex-col content-center justify-items-center space-y-4">
+      <div className="w-full grid h-full flex-col content-center justify-items-center space-y-4">
         <div className="w-64 md:w-80 text-left space-y-4">
           <p className="text-h1-dark w-full text-left">
             There seems to be an error

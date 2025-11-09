@@ -44,7 +44,7 @@ function PageTemplate({
   return (
     <div
       className={
-        `relative w-full h-full min-w-96 overflow-hidden p-10 md:p-20` +
+        `relative w-full grid h-full min-w-96 overflow-hidden p-10 md:p-20` +
         (background == "bg4" || background == "bg5"
           ? ` bg-dark-grey`
           : ` bg-white `)

@@ -195,7 +195,7 @@ export default function ChatTab({
   };
 
   return (
-    <div className="flex flex-col h-full w-full mx-auto overflow-hidden">
+    <div className="flex flex-col h-full w-full overflow-hidden">
       {/* Chat messages */}
       <div
         className="flex-1 overflow-y-auto w-full p-4 space-y-3"

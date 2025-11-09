@@ -122,9 +122,13 @@ export interface OpenEndedQuestion extends BaseQuestion {
 
 export interface LikertScaleQuestion extends BaseQuestion {
   type: "likertScale";
-  scaleMin: number;
-  scaleMax: number;
-  labels?: { min: string; max: string };
+  options: Array<{
+    label: string;
+    value: number;
+  }>;
+  sideTitle?: boolean;
+  doNotCollapse?: boolean;
+  removeValues?: boolean;
 }
 
 export interface RangeQuestion extends BaseQuestion {
