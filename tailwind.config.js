@@ -12,6 +12,7 @@ module.exports = {
         "light-grey-2": "#B3B3B3",
         "light-grey-3": "#ECECEC",
         "light-grey-4": "#F7F7F7",
+        "extra-dark-grey": "#1C1B1B",
       },
       keyframes: {
         "fade-in": {

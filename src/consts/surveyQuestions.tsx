@@ -11,14 +11,14 @@ export const ArtistPreSurveyQuestions: SurveyDefinition = {
         {
           id: "q1",
           type: "range",
-          question: "I am more creative than ____% of humans",
+          question: "I am more creative than ____% of humans.",
           labels: { min: "0%", max: "100%" },
           required: true,
         },
         {
           id: "q2",
           type: "likertScale",
-          question: "I engage in creative tasks ____",
+          question: "I engage in creative tasks ____.",
           options: [
             { label: "Very Rarely or Never", value: 1 },
             { label: "Rarely", value: 2 },

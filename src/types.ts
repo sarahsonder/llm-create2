@@ -22,6 +22,7 @@ export interface ArtistSurvey {
 
 export interface Poem {
   passageId: string; // passageId in Passage.id
+  passage: Passage;
   text: number[]; // this array holds the indexes of each word chosen from the passage
   poemSnapshot: PoemSnapshot[];
   sparkConversation?: Message[]; // LLM conversation in spark phase
@@ -40,6 +41,8 @@ export interface Message {
 export interface Passage {
   id: string;
   text: string;
+  title: string;
+  author: string;
 }
 
 export const Stage = {
@@ -85,6 +88,11 @@ export interface PoemFeedback {
   id: string;
   poemId: string;
   rating: number;
+}
+
+export interface Passage {
+  id: string;
+  text: string;
 }
 
 export const AudienceCondition = {

@@ -39,6 +39,7 @@ import { Toaster } from "./components/ui/toaster";
 import { db } from "./firebase";
 import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { globalSaveQueue } from "./utils/saveQueue";
+import FinalPoem from "./pages/artist/FinalPoem";
 
 interface DataContextValue {
   userData: UserData | null;
@@ -252,6 +253,7 @@ function App() {
               <Route path="/" element={<Captcha />} />
               <Route path="/consent" element={<ConsentForm />} />
               <Route path="/poem-viewer" element={<PoemViewer />} />
+              <Route path="/artist/final-poem" element={<FinalPoem />} />
               {userData && (
                 <>
                   <Route
@@ -281,6 +283,7 @@ function App() {
                     element={<LLMInstruction />}
                   />
                   <Route path="/thank-you" element={<ThankYou />} />
+                  <Route path="/artist/final-poem" element={<FinalPoem />} />
                 </>
               )}
 

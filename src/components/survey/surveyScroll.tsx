@@ -3,6 +3,7 @@ import type { SurveyDefinition, SurveyAnswers } from "../../types";
 import QuestionRenderer from "./questionRenderer";
 import { Progress, Button } from "@chakra-ui/react";
 import { DataContext } from "../../App";
+import { toaster } from "../../components/ui/toaster";
 
 interface Props {
   survey: SurveyDefinition;
@@ -61,6 +62,12 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
   const handleSubmit = () => {
     if (isSurveyComplete) {
       onSubmit(answers);
+    } else {
+      toaster.create({
+        description: "Please fill out all the questions!",
+        type: "error",
+        duration: 5000,
+      });
     }
   };
 
@@ -88,7 +95,7 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
             {section.description && (
               <p className="text-sub text-dark-grey">{section.description}</p>
             )}
-            <div className="space-y-8">
+            <div className="space-y-4">
               {section.questions.map((q) => (
                 <QuestionRenderer
                   key={q.id}

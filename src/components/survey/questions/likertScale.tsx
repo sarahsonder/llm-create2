@@ -44,7 +44,7 @@ const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
               }, minmax(0, 1fr))`,
             }}
           >
-            <p
+            <div
               className={
                 `text-sub  ` +
                 (question.sideTitle
@@ -61,7 +61,7 @@ const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
                   {question.required ? "*" : ""}
                 </span>
               </div>
-            </p>
+            </div>
             {question.options.map((opt) => (
               <div
                 key={opt.value}
