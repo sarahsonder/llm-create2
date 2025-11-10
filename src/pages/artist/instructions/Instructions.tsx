@@ -35,7 +35,9 @@ const ArtistInstructions = () => {
       <div className="w-full h-full flex-col space-y-6">
         <div className="text-main mb-2">
           In this study, you will be introduced to blackout poetry and write
-          your own poem!
+          your own blackout poem! We will walk you through the whole process,
+          and know that blackout poetry is easier than writing a poem because
+          you are provided with the source material.
           <Collapsible.Root unmountOnExit>
             <Collapsible.Trigger className="text-main underline italic text-light-grey-1 pt-2">
               <div className="flex flex-row items-center space-x-2">
@@ -101,7 +103,9 @@ const ArtistInstructions = () => {
             <p className="text-main mb-0">
               Important: please do not take screenshots, copy text, or consult
               external tools such as ChatGPT. We're interested in your best
-              effort and what you learn.
+              effort and what you learn! In addition, do not refresh or use the
+              browser's back/forward buttons as you will not be able to continue
+              the task.
             </p>
           </div>
         </div>

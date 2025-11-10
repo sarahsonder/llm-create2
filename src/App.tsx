@@ -14,6 +14,7 @@ import ThankYou from "./pages/ThankYou";
 import UserError from "./pages/Error";
 import PoemViewer from "./pages/PoemViewer";
 import usePreventRefresh from "./components/shared/preventRefresh";
+import usePreventBack from "./components/shared/preventBackBttn";
 import { nanoid } from "nanoid";
 
 // import AudienceInstructions from "./pages/audience/instructions/Instructions";
@@ -58,8 +59,12 @@ function App() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const saveTimerRef = useRef<number | null>(null);
+
   usePreventRefresh(
     "To make sure your session counts, please avoid refreshing the page. Do you still want to refresh?"
+  );
+  usePreventBack(
+    "To make sure your session counts, please avoid pressing the back button."
   );
 
   // clear session storage and set the session ID on first render

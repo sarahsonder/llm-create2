@@ -52,9 +52,12 @@ function MultiPageTemplate({
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [showCountdownVisible, setShowCountdownVisible] = useState(false);
 
   const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
 
   const isDraggingX = useRef(false);
   const isDraggingY = useRef(false);
@@ -136,6 +139,17 @@ function MultiPageTemplate({
           setIsTimeUp(true);
           clearInterval(timerRef.current!);
 
+          setCountdown(autoRedirectDuration);
+          countdownRef.current = setInterval(() => {
+            setCountdown((prev) => {
+              if (prev && prev > 1) return prev - 1;
+              clearInterval(countdownRef.current!);
+              return 0;
+            });
+          }, 1000);
+
+          setTimeout(() => setShowCountdownVisible(true), 30);
+
           autoRedirectTimeoutRef.current = setTimeout(() => {
             startFadeOut();
           }, autoRedirectDuration * 1000);
@@ -164,6 +178,16 @@ function MultiPageTemplate({
     startFadeOut();
   };
 
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const s = Math.floor(seconds % 60)
+      .toString()
+      .padStart(2, "0");
+    return `${m}:${s}`;
+  };
+
   return (
     <div className="w-full h-full min-w-96 overflow-hidden">
       <div
@@ -188,18 +212,31 @@ function MultiPageTemplate({
                 className={`w-full h-max flex text-h1 justify-between items-center flex-row text-h1`}
               >
                 <p>{title}</p>
-                <Button
-                  className={`btn-small px-4 ${
-                    !isTimeUp ? "pointer-events-none opacity-50" : ""
-                  } font-sans`}
-                  onClick={handleContinueClick}
-                  disabled={!isTimeUp}
-                  style={{
-                    background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
-                  }}
-                >
-                  {buttonText}
-                </Button>
+                <div className="flex flex-col items-center justify-center min-w-[10rem]">
+                  <Button
+                    className={`btn-small px-4 text-center ${
+                      !isTimeUp ? "pointer-events-none opacity-50" : ""
+                    } font-sans`}
+                    onClick={handleContinueClick}
+                    disabled={!isTimeUp}
+                    style={{
+                      background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
+                    }}
+                  >
+                    {buttonText}
+                  </Button>
+
+                  <div className="h-4 mt-2 flex items-center justify-center">
+                    {isTimeUp && countdown !== null && (
+                      <p
+                        className={`text-xs text-gray-500 text-center transition-opacity duration-700 ease-out
+                        ${showCountdownVisible ? "opacity-100" : "opacity-0"}`}
+                      >
+                        Your next step starts in {formatTime(countdown)}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div
