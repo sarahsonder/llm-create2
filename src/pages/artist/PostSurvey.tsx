@@ -1,11 +1,11 @@
 import SurveyScroll from "../../components/survey/surveyScroll";
 import { useNavigate } from "react-router-dom";
-import HalfPageTemplate from "../../components/shared/pages/halfPage";
 import { useContext } from "react";
 import { DataContext } from "../../App";
 import { ArtistPostSurveyQuestions } from "../../consts/surveyQuestions";
 import type { SurveyDefinition, Artist } from "../../types";
 import { toaster } from "../../components/ui/toaster";
+import PoemPageTemplate from "../../components/shared/pages/poemPage";
 
 const ArtistPostSurvey = () => {
   const context = useContext(DataContext);
@@ -17,6 +17,7 @@ const ArtistPostSurvey = () => {
   const { userData, addPostSurvey, sessionId } = context;
 
   const navigate = useNavigate();
+  const poemData = userData?.data && (userData.data as Artist).poem;
   const submitDb = async (answers: any) => {
     // format the data
     if (!userData || !userData.data) {
@@ -92,12 +93,12 @@ const ArtistPostSurvey = () => {
   };
 
   return (
-    <HalfPageTemplate
+    <PoemPageTemplate
       description="Please fill out the following questions before we wrap things up! (Scroll to view all questions)"
-      background="bg5"
+      poem={poemData}
     >
       <SurveyScroll survey={filteredSurvey} onSubmit={handleSubmit} />
-    </HalfPageTemplate>
+    </PoemPageTemplate>
   );
 };
 

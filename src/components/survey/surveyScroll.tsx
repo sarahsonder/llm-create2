@@ -64,7 +64,7 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
       onSubmit(answers);
     } else {
       toaster.create({
-        description: "Please fill out all the questions!",
+        description: "Please fill out all required questions!",
         type: "error",
         duration: 5000,
       });

@@ -301,74 +301,7 @@ function MultiPageTemplate({
             />
 
             {/* Chatbot Panel */}
-            <div className="flex-1 p-4 overflow-auto bg-light-grey-4">
-              <div className="flex flex-col h-full w-full overflow-y-scroll">
-                <div className="w-full h-max flex flex-row items-center mt-4">
-                  <div className="w-6 h-6 mr-2">
-                    <svg viewBox="0 0 92 106" className="w-full h-full">
-                      <path
-                        fill="#2F2F2F"
-                        d="M46 0L56.1221 35.468L91.8993 26.5L66.2442 53L91.8993 79.5L56.1221 70.532L46 106L35.8779 70.532L0.100655 79.5L25.7558 53L0.100655 26.5L35.8779 35.468L46 0Z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-h2 text-left">Blackout Poetry</p>
-                </div>
-
-                <p className="text-sub text-dark-grey text-left mt-2">
-                  Blackout poetry encourages readers to create poems by
-                  redacting words from ordinary texts.
-                </p>
-                {stage === "SPARK" ? (
-                  <>
-                    <p className="text-sub text-left text-dark-grey mt-2">
-                      As you start brainstorming your blackout poem, you can
-                      think about the following:
-                    </p>
-                    <ul className=" text-sub text-left text-dark-grey list-disc mt-2 mb-4 pl-4">
-                      <li>Themes</li>
-                      <li>Tone</li>
-                      <li>Mood</li>
-                      <li>Imagery</li>
-                      <li>Figurative Language</li>
-                      <li>Word Choice</li>
-                      <li>Symbolism</li>
-                      <li className="italic">Anything</li>
-                    </ul>
-                    <p className="text-sub text-dark-grey text-left mb-4">
-                      You have complete freedom to brainstorm however you like.
-                      Write down any thoughts, feelings, or ideas that come to
-                      mind as you read the passage.
-                    </p>{" "}
-                  </>
-                ) : (
-                  <></>
-                )}
-
-                {/* <p className="text-h3 text-left mt-4">The passage</p>
-                <p className="text-sub text-dark-grey text-left mb-4">
-                  What do you initially notice? What are you drawn to?
-                </p>
-                <p className="text-h3 text-left mt-2">Themes</p>
-                <p className="text-sub text-dark-grey text-left mb-4">
-                  What themes are you seeing in the passage? What themes do you
-                  want to explore in your poem?
-                </p>
-
-                <p className="text-h3 text-left mt-2">Emotions</p>
-                <p className="text-sub text-dark-grey text-left mb-4">
-                  What emotions are you feeling as you read the passage? Is
-                  there an emotion you want to express in your poem?
-                </p>
-
-                <p className="text-h3 text-left mt-2">Anything</p>
-                <p className="text-sub text-dark-grey text-left mb-4">
-                  You have complete freedom to brainstorm however you like.
-                  Write down any thoughts, feelings, or ideas that come to mind
-                  as you read the passage.
-                </p> */}
-              </div>
-            </div>
+            <div className="flex-1 p-4 overflow-auto bg-light-grey-4"></div>
           </>
         )}
       </div>
