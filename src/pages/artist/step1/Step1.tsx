@@ -6,7 +6,8 @@ import { Stage } from "../../../types";
 import type { Message, Poem } from "../../../types";
 import { useContext } from "react";
 import { DataContext } from "../../../App";
-
+import type { Passage } from "../../../types";
+import { Passages } from "../../../consts/passages";
 const ArtistStep1 = () => {
   const navigate = useNavigate();
 
@@ -19,15 +20,16 @@ const ArtistStep1 = () => {
   const sparkMessagesRef = useRef<Message[]>([]);
   const sparkNotesRef = useRef<string>("");
 
-  const [passage] = useState(
-    "Twilight settled over Zuckerman’s barn, and a feeling of peace. Fern knew it was almost suppertime but she couldn’t bear to leave. Swallows passed on silent wings, in and out of the doorways, bringing food to their young ones. From across the road a bird sang “Whippoorwill, whippoorwill!” Lurvy sat down under an apple tree and lit his pipe; the animals sniffed the familiar smell of strong tobacco. Wilbur heard the trill of the tree toad and the occasional slamming of the kitchen door. All these sounds made him feel comfortable and happy, for he loved life and loved to be a part of the world on a summer evening. But as he lay there he remembered what the old sheep had told him. The thought of death came to him and he began to tremble with fear."
-  );
+  const randomIndex = Math.floor(Math.random() * (Passages?.length || 1));
+  const selected = Passages?.[randomIndex] ?? "";
+  const [passage] = useState<Passage>(selected);
   const userType = userData?.data.condition as ArtistCondition;
   const [sparkMessages, setSparkMessages] = useState<Message[]>([]);
   const [sparkNotes, setSparkNotes] = useState<string>("");
 
   let artistPoem: Poem = {
-    passageId: "",
+    passageId: passage.id,
+    passage: passage,
     text: [],
     poemSnapshot: [],
     sparkConversation: [],
@@ -66,17 +68,22 @@ const ArtistStep1 = () => {
       buttonText="Begin Writing"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "SPARK"}
       stage={Stage.SPARK}
+      passage={passage.text}
       messages={sparkMessages}
       setMessages={setSparkMessages}
       notes={sparkNotes}
       setNotes={setSparkNotes}
     >
-      <div className="h-full w-full flex">
+      <div className="h-full w-full flex flex-col">
         <p
           className="text-main text-sm md:text-base select-none"
           onCopy={(e) => e.preventDefault()}
         >
-          {passage}
+          {passage.text}
+        </p>
+        <p className="text-xs text-grey text-left pt-2">
+          <span className="italic">{'"' + passage.title + '"'}</span>
+          <span>{", " + passage.author + " from The New York Times"}</span>
         </p>
       </div>
     </MultiPageTemplate>

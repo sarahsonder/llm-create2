@@ -44,7 +44,7 @@ function PageTemplate({
   return (
     <div
       className={
-        `relative w-full h-full min-w-96 overflow-hidden p-10 md:p-20` +
+        `relative w-full grid h-full min-w-96 overflow-hidden p-10 md:p-20` +
         (background == "bg4" || background == "bg5"
           ? ` bg-dark-grey`
           : ` bg-white `)
@@ -96,7 +96,7 @@ function PageTemplate({
           <div
             className={
               `w-full overflow-y-auto py-4` +
-              (title ? ` h-[60vh]` : ` h-[50vh] md:h-[70vh]`)
+              (title ? ` h-[60vh]` : ` h-[70vh]`)
             }
           >
             {children}

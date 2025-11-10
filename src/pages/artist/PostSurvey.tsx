@@ -5,9 +5,6 @@ import { useContext } from "react";
 import { DataContext } from "../../App";
 import { ArtistPostSurveyQuestions } from "../../consts/surveyQuestions";
 import type { SurveyDefinition, Artist } from "../../types";
-import { db } from "../../firebase";
-import { doc, collection, writeBatch, deleteDoc } from "firebase/firestore";
-import { globalSaveQueue } from "../../utils/saveQueue";
 import { toaster } from "../../components/ui/toaster";
 
 const ArtistPostSurvey = () => {
@@ -17,38 +14,28 @@ const ArtistPostSurvey = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addPostSurvey, sessionId, flushSaves } = context;
+  const { userData, addPostSurvey, sessionId } = context;
 
   const navigate = useNavigate();
   const submitDb = async (answers: any) => {
-    // Add to DB
-    const artistRef = doc(collection(db, "artist"));
-    const surveyRef = doc(collection(db, "artistSurvey"));
-    const poemRef = doc(collection(db, "poem"));
-
-    const artist = {
-      condition: userData?.data.condition,
-      surveyResponse: surveyRef,
-      poem: poemRef,
-      timestamps: [...(userData?.data?.timeStamps ?? []), new Date()],
-    };
+    // format the data
+    if (!userData || !userData.data) {
+      console.error("userData not loaded yet!");
+      return;
+    }
 
     const artistData = userData?.data as Artist;
-
     const survey = artistData.surveyResponse;
+    const poem = artistData.poem;
 
     const surveyData = {
-      artistId: artistRef.id,
       preSurvey: survey.preSurvey,
       preSurveyAnswers: survey.preAnswers,
       postSurvey: ArtistPostSurveyQuestions,
       postSurveyAnswers: answers,
     };
 
-    const poem = artistData.poem;
-
     const poemData = {
-      artistId: artistRef.id,
       text: poem.text,
       snapshot: poem.poemSnapshot,
       sparkConversation: poem.sparkConversation,
@@ -57,31 +44,25 @@ const ArtistPostSurvey = () => {
       writeNotes: poem.writeNotes,
     };
 
-    const batch = writeBatch(db);
-    batch.set(artistRef, artist);
-    batch.set(surveyRef, surveyData);
-    batch.set(poemRef, poemData);
-
+    // SEND IT RAHHHH
     try {
-      // Ensure any pending autosaves are flushed before final write
-      await flushSaves();
-      await batch.commit();
-      // After successful completion, remove incomplete session safely
-      if (sessionId) {
-        await globalSaveQueue.enqueue(async () => {
-          const incompleteRef = doc(
-            collection(db, "incompleteSessions"),
-            sessionId
-          );
-          await deleteDoc(incompleteRef);
-        });
-      }
+      await fetch("/api/firebase/commit-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          artistData,
+          surveyData,
+          poemData,
+          sessionId,
+        }),
+      });
+
       toaster.create({
         description: "Survey successfully submitted!",
         type: "success",
         duration: 5000,
       });
-      navigate("/thank-you");
+      navigate("/artist/thank-you");
     } catch (error) {
       console.error("Error saving data:", error);
       toaster.create({
@@ -92,6 +73,7 @@ const ArtistPostSurvey = () => {
       });
     }
   };
+
   const handleSubmit = async (answers: any) => {
     addPostSurvey({
       postSurvey: ArtistPostSurveyQuestions,

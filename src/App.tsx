@@ -37,8 +37,6 @@ import type {
 } from "./types";
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
-import { db } from "./firebase";
-import { collection, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { globalSaveQueue } from "./utils/saveQueue";
 
 interface DataContextValue {
@@ -79,39 +77,15 @@ function App() {
     setSessionId(id);
   }, []);
 
-  const completionStatus = (stepsCompleted: number) => {
-    const statusMap: Record<number, string> = {
-      1: "captcha",
-      2: "consent",
-      3: "pre-survey",
-      4: "brainstorm-instructions",
-      5: "brainstorm",
-      6: "write",
-      7: "post-survey",
-    };
-
-    return statusMap[stepsCompleted] || "started";
-  };
-
   const enqueueAutosave = (data: UserData | null) => {
     if (!data || !sessionId) return;
 
-    const status = data.data.timeStamps
-      ? completionStatus(data.data.timeStamps.length)
-      : "started";
-
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = window.setTimeout(() => {
-      globalSaveQueue.enqueue(async () => {
-        const ref = doc(collection(db, "incompleteSessions"), sessionId);
-        const payload = {
-          sessionId,
-          role: data.role,
-          partialData: data.data,
-          lastUpdated: serverTimestamp(),
-          completionStatus: status,
-        };
-        await setDoc(ref, payload, { merge: true });
+    saveTimerRef.current = window.setTimeout(async () => {
+      await fetch("/api/firebase/autosave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, data }),
       });
     }, 500);
   };
@@ -285,7 +259,7 @@ function App() {
                     path="/artist/assistant-instructions"
                     element={<LLMInstruction />}
                   />
-                  <Route path="/thank-you" element={<ThankYou />} />
+                  <Route path="/artist/thank-you" element={<ThankYou />} />
                 </>
               )}
 

@@ -22,6 +22,7 @@ export interface ArtistSurvey {
 
 export interface Poem {
   passageId: string; // passageId in Passage.id
+  passage: Passage;
   text: number[]; // this array holds the indexes of each word chosen from the passage
   poemSnapshot: PoemSnapshot[];
   sparkConversation?: Message[]; // LLM conversation in spark phase
@@ -40,6 +41,8 @@ export interface Message {
 export interface Passage {
   id: string;
   text: string;
+  title: string;
+  author: string;
 }
 
 export const Stage = {
@@ -87,6 +90,11 @@ export interface PoemFeedback {
   rating: number;
 }
 
+export interface Passage {
+  id: string;
+  text: string;
+}
+
 export const AudienceCondition = {
   NO_KNOWLEDGE: "NO_KNOWLEDGE",
   FULL_TRANSPARENCY: "FULL_TRANSPARENCY",
@@ -122,9 +130,13 @@ export interface OpenEndedQuestion extends BaseQuestion {
 
 export interface LikertScaleQuestion extends BaseQuestion {
   type: "likertScale";
-  scaleMin: number;
-  scaleMax: number;
-  labels?: { min: string; max: string };
+  options: Array<{
+    label: string;
+    value: number;
+  }>;
+  sideTitle?: boolean;
+  doNotCollapse?: boolean;
+  removeValues?: boolean;
 }
 
 export interface RangeQuestion extends BaseQuestion {

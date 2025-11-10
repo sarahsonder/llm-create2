@@ -28,7 +28,6 @@ const ArtistStep2 = () => {
   const selectedWordIndexesRef = useRef<number[]>([]);
   const poemSnapshotsRef = useRef<PoemSnapshot[]>([]);
   const writeNotesRef = useRef<string>("");
-
   const [writeNotes, setWriteNotes] = useState(
     artistData?.poem?.sparkNotes || ""
   );
@@ -69,6 +68,7 @@ const ArtistStep2 = () => {
       buttonText="Submit"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "WRITING"}
       stage={Stage.WRITE}
+      passage={artistPoem?.passage.text || ""}
       messages={writeMessages}
       setMessages={setWriteMessages}
       notes={writeNotes}
@@ -77,6 +77,7 @@ const ArtistStep2 = () => {
     >
       <div className="h-max w-full flex flex-col justify-between">
         <BlackoutPoetry
+          passageText={artistPoem?.passage.text || ""}
           selectedWordIndexes={selectedWordIndexes}
           setSelectedWordIndexes={setSelectedWordIndexes}
           setPoemSnapshots={setPoemSnapshots}

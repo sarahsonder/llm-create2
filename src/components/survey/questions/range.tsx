@@ -18,7 +18,7 @@ const Range: React.FC<Props> = ({ question, value, onChange }) => {
 
       <div className="w-full flex flex-col items-center">
         <Slider.Root
-          value={[value]}
+          value={[value || 50]}
           min={0}
           max={100}
           step={1}

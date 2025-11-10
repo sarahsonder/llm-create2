@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const openai = new OpenAI({ apiKey: process.env.VITE_LLM_KEY || "" });
+const openai = new OpenAI({ apiKey: process.env.LLM_KEY || "" });
 
 const router = express.Router();
 

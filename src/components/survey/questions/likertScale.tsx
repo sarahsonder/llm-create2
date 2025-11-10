@@ -4,58 +4,105 @@ import { RadioGroup } from "@chakra-ui/react";
 
 interface Props {
   question: LikertScaleQuestion;
-  value: number | null | undefined; // allow undefined too
+  value: number | null | undefined;
   onChange: (id: string, value: number) => void;
 }
 
 const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
-  const range = Array.from(
-    { length: question.scaleMax - question.scaleMin + 1 },
-    (_, i) => question.scaleMin + i
-  );
-
   return (
     <div className="mb-4 space-y-4">
-      <p className="text-main">
-        {" "}
+      <p
+        className={
+          `text-main ` + (question.sideTitle ? " block md:hidden" : "")
+        }
+      >
         {question.question}
         <span className="text-red-700">{question.required ? "*" : ""}</span>
       </p>
-      <div className="flex flex-col md:flex-row md:items-center gap-2">
-        {question.labels && (
-          <span className="text-sub hidden md:block">
-            {question.labels.min}
-          </span>
-        )}
-        <RadioGroup.Root
-          value={value != null ? value.toString() : ""}
-          onValueChange={(e) => onChange(question.id, parseInt(e.value!, 10))}
-          className="flex flex-col md:flex-row justify-between"
+
+      <RadioGroup.Root
+        value={value != null ? value.toString() : ""}
+        onValueChange={(e) => onChange(question.id, parseInt(e.value!, 10))}
+        className="w-full"
+      >
+        <div
+          className={
+            `flex w-full flex-row md:items-center md:justify-around ` +
+            (question.doNotCollapse ? " items-center justify-around" : "")
+          }
         >
-          {range.map((num) => (
-            <RadioGroup.Item
-              key={num}
-              value={num.toString()}
-              className={`flex items-center gap-2 pb-2 md:pb-0 pl-2 cursor-pointer`}
+          <div
+            className={
+              `
+            flex flex-col gap-3 mb-1
+            md:grid md:gap-6
+          ` + (question.doNotCollapse ? " flex-row grid gap-6" : "")
+            }
+            style={{
+              gridTemplateColumns: `repeat(${
+                question.options.length + (question.sideTitle ? 1 : 0)
+              }, minmax(0, 1fr))`,
+            }}
+          >
+            <div
+              className={
+                `text-sub  ` +
+                (question.sideTitle
+                  ? " hidden h-0 md:block md:h-full md:w-24"
+                  : " hidden ")
+              }
             >
-              <RadioGroup.ItemHiddenInput />
-              <RadioGroup.ItemIndicator className="border border-light-grey-1 focus:border-grey focus:border-2 " />
-              <RadioGroup.ItemText className="text-sub font-light md:hidden">
-                {num === question.scaleMin
-                  ? question.labels!.min
-                  : num === question.scaleMax
-                  ? question.labels!.max
-                  : ""}
-              </RadioGroup.ItemText>
-            </RadioGroup.Item>
-          ))}
-        </RadioGroup.Root>
-        {question.labels && (
-          <span className="text-sub hidden md:block">
-            {question.labels.max}
-          </span>
-        )}
-      </div>
+              {!question.removeValues && (
+                <div className="h-0 md:h-10 md:mb-3"></div>
+              )}
+              <div className=" flex items-center">
+                {question.question}
+                <span className="text-red-700">
+                  {question.required ? "*" : ""}
+                </span>
+              </div>
+            </div>
+            {question.options.map((opt) => (
+              <div
+                key={opt.value}
+                className={
+                  `
+                /* mobile layout: horizontal row */
+
+                /* desktop layout: stacked column */
+                md:flex md:flex-col md:items-center md:text-center
+              ` +
+                  (question.doNotCollapse
+                    ? " items-center flex flex-col text-center"
+                    : " flex items-center gap-3 text-left ")
+                }
+              >
+                {/* Radio */}
+                <RadioGroup.Item
+                  value={opt.value.toString()}
+                  className="cursor-pointer flex-shrink-0"
+                >
+                  <RadioGroup.ItemHiddenInput />
+                  <RadioGroup.ItemIndicator className="border border-light-grey-1 rounded-full w-4 h-4 focus:border-grey focus:border-2" />
+                </RadioGroup.Item>
+
+                {/* Label */}
+                <span
+                  className={
+                    `
+                  text-sub break-words  overflow-hidden text-ellipsis
+                  /* desktop: label above */
+                  md:max-w-24 md:order-first md:mb-1 md:h-10 md:flex md:items-start md:justify-center md:text-center
+                ` + (question.removeValues ? "block md:hidden " : "")
+                  }
+                >
+                  {opt.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </RadioGroup.Root>
     </div>
   );
 };

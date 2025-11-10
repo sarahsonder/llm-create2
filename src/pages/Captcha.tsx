@@ -6,6 +6,7 @@ import { toaster } from "../components/ui/toaster";
 import { DataContext } from "../App";
 import { ArtistCondition } from "../types";
 import type { Poem } from "../types";
+import { Passages } from "../consts/passages";
 
 const TEST_CAPTCHA = "*TEST";
 
@@ -80,8 +81,14 @@ const Captcha = () => {
     if (inputCaptcha === "blackout") {
       addUserData({ role: "artist" });
       addRoleSpecificData({ condition: ArtistCondition.TOTAL_ACCESS });
+
+      // pick random passage (works if Passages entries are strings or objects)
+      const randomIndex = Math.floor(Math.random() * (Passages?.length || 1));
+      const selected = Passages?.[randomIndex] ?? "";
+
       let artistPoem: Poem = {
-        passageId: "",
+        passageId: selected.id,
+        passage: selected,
         text: [],
         sparkConversation: [],
         writeConversation: [],

@@ -33,7 +33,7 @@ function HalfPageTemplate({
   return (
     <div
       className={
-        `relative w-full h-full min-w-96 bg-white overflow-hidden p-16 md:p-20 ` +
+        `relative w-full h-full min-w-96 bg-white grid overflow-hidden p-16 md:p-20 ` +
         (background == "bg4" ? `bg-dark-grey` : `bg-white `)
       }
     >
@@ -54,7 +54,7 @@ function HalfPageTemplate({
       )}
       <div
         className={
-          `relative z-10 h-full w-full lg:w-1/2 space-y-4 flex flex-col justify-between` +
+          `relative z-10 h-full w-full lg:w-1/2 space-y-4 flex flex-col` +
           (left == undefined
             ? ` justify-self-start`
             : left
