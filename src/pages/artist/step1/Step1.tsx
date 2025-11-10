@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useRef, useState, useCallback, use } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import MultiPageTemplate from "../../../components/shared/pages/multiPage";
 import { ArtistCondition } from "../../../types";
 import { Stage } from "../../../types";
@@ -22,7 +22,7 @@ const ArtistStep1 = () => {
 
   const randomIndex = Math.floor(Math.random() * (Passages?.length || 1));
   const selected = Passages?.[randomIndex] ?? "";
-  const [passage, setPassage] = useState<Passage>(selected);
+  const [passage] = useState<Passage>(selected);
   const userType = userData?.data.condition as ArtistCondition;
   const [sparkMessages, setSparkMessages] = useState<Message[]>([]);
   const [sparkNotes, setSparkNotes] = useState<string>("");
