@@ -71,16 +71,25 @@ export default function ChatTab({
     };
   }, [selectedWordIndexes]);
 
-  const promptSuggestions = [
-    "What themes or moods could I explore in my blackout poem?",
-    "Which words best capture the message I want to keep?",
-    "Can you help me find a starting point in this text?",
-  ];
+  const promptSuggestions =
+    stage === "SPARK"
+      ? [
+          "What ideas could this text inspire?",
+          "Which theme feels most compelling?",
+          "Where should I start looking?",
+        ]
+      : [
+          "What directions could my blackout poem take?",
+          "Which themes feels strongest to build around?",
+          "How do I begin choosing words?",
+        ];
 
   const openingMessage = {
     role: Role.LLM,
     content:
-      "Hello! I'm your assistant for today. I am just ChatGPT, so feel free to use me just as you would in your day-to-day activities. I'm here to help you brainstorm, refine, or analyze blackout poetry as you create your own piece.",
+      stage === "SPARK"
+        ? "Hello! I am your blackout poetry assistant, here to help you brainstorm, refine, or analyze blackout poetry. Feel free to interact with me as you would any regular AI chatbot."
+        : "Hello! I am your blackout poetry assistant, here to support you in writing your blackout poetry. Feel free to interact with me as you would any regular AI chatbot.",
   };
 
   useEffect(() => {
