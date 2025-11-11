@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useContext } from "react";
 import { FiSend } from "react-icons/fi";
 import { Button, Textarea } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
@@ -6,6 +6,7 @@ import type { Message, Stage } from "../../types";
 import { Role } from "../../types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { DataContext } from "../../App";
 
 interface ChatTabProps {
   messages: Message[];
@@ -32,6 +33,9 @@ The user is tasked with creating a blackout poem from this passage. Your goal is
 You MUST use this passage. Do not mention any other text, and always refer to the one given.
 `;
 
+const fullAccessSystemMessage = `You are a blackout poety assistant. Blackout poetry is a form of poetry where given a passage, you select words from that passage to create a poem. Words must be selected in order as they appear in the passage, and selected words must appear in the passage.',
+`;
+
 export default function ChatTab({
   messages,
   setMessages,
@@ -39,13 +43,22 @@ export default function ChatTab({
   stage,
   passage,
 }: ChatTabProps) {
+  const context = useContext(DataContext);
+  if (!context) {
+    throw new Error("Component must be used within a DataContext.Provider");
+  }
+  const { userData } = context;
+  const condition = userData?.data.condition;
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const systemMessageStage =
-    systemMessageDefault +
-    (stage == "SPARK"
-      ? `The user is in the SPARK stage.`
-      : `The user is in the WRITE stage.`);
+    condition === "SPARK"
+      ? fullAccessSystemMessage
+      : systemMessageDefault +
+        (stage == "SPARK"
+          ? `The user is in the SPARK stage.`
+          : `The user is in the WRITE stage.`);
 
   const [isLLMLoading, setIsLLMLoading] = useState(false);
   const [input, setInput] = useState("");
