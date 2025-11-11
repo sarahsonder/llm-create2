@@ -123,6 +123,13 @@ const Captcha = () => {
         timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
       });
       navigate("/consent");
+    } else if (inputCaptcha === "complete") {
+      addUserData({ role: "artist" });
+      addRoleSpecificData({ condition: ArtistCondition.TOTAL_ACCESS });
+      addRoleSpecificData({
+        timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+      });
+      navigate("/consent");
     } else if (inputCaptcha === captchaMessage) {
       addUserData({ role: "artist" });
       addRoleSpecificData({ condition: getRandomArtistCondition() });

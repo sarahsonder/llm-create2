@@ -226,13 +226,14 @@ function MultiPageTemplate({
                     {buttonText}
                   </Button>
 
-                  <div className="h-4 mt-2 flex items-center justify-center">
+                  <div className="h-4 mt-2 pt-2 flex items-center justify-center">
                     {isTimeUp && countdown !== null && (
                       <p
                         className={`text-xs text-gray-500 text-center transition-opacity duration-700 ease-out
                         ${showCountdownVisible ? "opacity-100" : "opacity-0"}`}
                       >
-                        Your next step starts in {formatTime(countdown)}
+                        Tap "{buttonText}" or <br /> continue in{" "}
+                        {formatTime(countdown)}
                       </p>
                     )}
                   </div>

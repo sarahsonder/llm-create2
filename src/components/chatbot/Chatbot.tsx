@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, useContext } from "react";
 import { FiSend } from "react-icons/fi";
 import { Button, Textarea } from "@chakra-ui/react";
 import { nanoid } from "nanoid";
@@ -6,6 +6,7 @@ import type { Message, Stage } from "../../types";
 import { Role } from "../../types";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { DataContext } from "../../App";
 
 interface ChatTabProps {
   messages: Message[];
@@ -32,6 +33,16 @@ The user is tasked with creating a blackout poem from this passage. Your goal is
 You MUST use this passage. Do not mention any other text, and always refer to the one given.
 `;
 
+const fullAccessSystemMessage = `
+You are a blackout poetry assistant. Blackout poetry is a form of poetry where given a passage, you select words from that passage to create a poem. Words must be selected in order as they appear in the passage, and selected words must appear in the passage.',
+
+Enabled Personality: v2
+
+You are a highly capable, thoughtful, and precise assistant. Your goal is to deeply understand the user's intent, ask clarifying questions when needed, think step-by-step through complex problems, provide clear and accurate answers, and proactively anticipate helpful follow-up information. Always prioritize being truthful, nuanced, insightful, and efficient, tailoring your responses specifically to the user's needs and preferences.
+
+NEVER use the dalle tool.
+`;
+
 export default function ChatTab({
   messages,
   setMessages,
@@ -39,13 +50,22 @@ export default function ChatTab({
   stage,
   passage,
 }: ChatTabProps) {
+  const context = useContext(DataContext);
+  if (!context) {
+    throw new Error("Component must be used within a DataContext.Provider");
+  }
+  const { userData } = context;
+  const condition = userData?.data.condition;
+
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const systemMessageStage =
-    systemMessageDefault +
-    (stage == "SPARK"
-      ? `The user is in the SPARK stage.`
-      : `The user is in the WRITE stage.`);
+    condition === "SPARK"
+      ? fullAccessSystemMessage
+      : systemMessageDefault +
+        (stage == "SPARK"
+          ? `The user is in the SPARK stage.`
+          : `The user is in the WRITE stage.`);
 
   const [isLLMLoading, setIsLLMLoading] = useState(false);
   const [input, setInput] = useState("");
@@ -71,16 +91,25 @@ export default function ChatTab({
     };
   }, [selectedWordIndexes]);
 
-  const promptSuggestions = [
-    "How to write a blackout poem",
-    "What emotions are conveyed in this text",
-    "What themes appear in this text",
-  ];
+  const promptSuggestions =
+    stage === "SPARK"
+      ? [
+          "What ideas could this text inspire?",
+          "Which theme feels most compelling?",
+          "Where should I start looking?",
+        ]
+      : [
+          "What directions could my blackout poem take?",
+          "Which themes feels strongest to build around?",
+          "How do I begin choosing words?",
+        ];
 
   const openingMessage = {
     role: Role.LLM,
     content:
-      "Hello! I'm your assistant for today. I am just ChatGPT, so feel free to use me just as you would in your day-to-day activities. I'm here to help you brainstorm, refine, or analyze blackout poetry as you create your own piece.",
+      stage === "SPARK"
+        ? "Hello! I am your blackout poetry assistant, here to help you brainstorm, refine, or analyze blackout poetry. Feel free to interact with me as you would any regular AI chatbot."
+        : "Hello! I am your blackout poetry assistant, here to support you in writing your blackout poetry. Feel free to interact with me as you would any regular AI chatbot.",
   };
 
   useEffect(() => {
