@@ -63,7 +63,7 @@ const ArtistStep2 = () => {
       title="Step 2: Write your poem"
       description="Create a poem by clicking on words in the passage."
       duration={180}
-      autoRedirectDuration={120}
+      autoRedirectDuration={420}
       afterDuration={onComplete}
       buttonText="Submit"
       llmAccess={userType == "TOTAL_ACCESS" || userType == "WRITING"}
