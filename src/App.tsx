@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import "./index.css";
-import Captcha from "./pages/Captcha";
+// import Captcha from "./pages/Captcha";
 import ConsentForm from "./pages/ConsentForm";
-import AristPreSurvey from "./pages/artist/PreSurvey";
+// import AristPreSurvey from "./pages/artist/PreSurvey";
 import ArtistInstructions from "./pages/artist/instructions/Instructions";
 import ArtistTransitionStep1 from "./pages/artist/step1/TransitionStep1";
 import ArtistStep1 from "./pages/artist/step1/Step1";
@@ -16,7 +16,9 @@ import PoemViewer from "./pages/PoemViewer";
 import usePreventRefresh from "./components/shared/preventRefresh";
 import usePreventBack from "./components/shared/preventBackBttn";
 import { nanoid } from "nanoid";
-
+import AudiencePreSurvey from "./pages/audience/PreSurvey";
+import AudienceCaptcha from "./pages/audience/AudienceCaptcha";
+import AudiencePoems from "./pages/audience/step2/Step2";
 // import AudienceInstructions from "./pages/audience/instructions/Instructions";
 // ================= AUDIENCE PAGES =================
 // import ChooseYourCharacter from "./pages/ChooseYourCharacter";
@@ -38,6 +40,8 @@ import type {
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
 import { globalSaveQueue } from "./utils/saveQueue";
+import AudienceInstructions from "./pages/audience/instructions/Instructions";
+import AudiencePassage from "./pages/audience/step1/Step1";
 
 interface DataContextValue {
   userData: UserData | null;
@@ -228,15 +232,29 @@ function App() {
           <Toaster />
           <Router>
             <Routes>
-              <Route path="/" element={<Captcha />} />
+              {/* <Route path="/" element={<Captcha />} /> */}
+              <Route path="/" element={<AudienceCaptcha />} />
               <Route path="/consent" element={<ConsentForm />} />
               <Route path="/poem-viewer" element={<PoemViewer />} />
               {userData && (
                 <>
-                  <Route
+                  {/* <Route
                     path="/artist/pre-survey"
                     element={<AristPreSurvey />}
+                  /> */}
+                  <Route
+                    path="/audience/pre-survey"
+                    element={<AudiencePreSurvey />}
                   />
+                  <Route
+                    path="/audience/instructions"
+                    element={<AudienceInstructions />}
+                  />
+                  <Route
+                    path="/audience/passage"
+                    element={<AudiencePassage />}
+                  />
+                  <Route path="/audience/poems" element={<AudiencePoems />} />
                   <Route
                     path="/artist/instructions"
                     element={<ArtistInstructions />}

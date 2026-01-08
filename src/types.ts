@@ -14,6 +14,11 @@ export interface ArtistSurvey {
   postAnswers: SurveyAnswers;
 }
 
+export interface AudiencePoem {
+  id: string;
+  poemId: string;
+}
+
 // export interface SurveyQuestion {
 //   id: string;
 //   q: string;
@@ -68,9 +73,9 @@ export type Role = (typeof Role)[keyof typeof Role];
 
 // AUDIENCE TYPES
 export interface Audience {
-  condition: AudienceCondition;
+  passageId: string;
   surveyResponse: AudienceSurvey;
-  poemFeedback: PoemFeedback;
+  poemsViewed: AudiencePoem[];
   timeStamps: Date[];
 }
 
@@ -79,8 +84,12 @@ export interface AudienceSurvey {
   id: string;
   preSurvey: SurveyDefinition;
   preAnswers: SurveyAnswers;
+  poemSurvey: PoemSurveyDefinition[];
+  poemAnswers: PoemSurveyAnswers[];
   postSurvey: SurveyDefinition;
   postAnswers: SurveyAnswers;
+  AISurvey: SurveyDefinition;
+  AIAnswers: SurveyAnswers;
 }
 
 // TODO: Exact poem feedback fields tbd
@@ -95,12 +104,12 @@ export interface Passage {
   text: string;
 }
 
-export const AudienceCondition = {
-  NO_KNOWLEDGE: "NO_KNOWLEDGE",
-  FULL_TRANSPARENCY: "FULL_TRANSPARENCY",
-} as const;
-export type AudienceCondition =
-  (typeof AudienceCondition)[keyof typeof AudienceCondition];
+// export const AudienceCondition = {
+//   NO_KNOWLEDGE: "NO_KNOWLEDGE",
+//   FULL_TRANSPARENCY: "FULL_TRANSPARENCY",
+// } as const;
+// export type AudienceCondition =
+//   (typeof AudienceCondition)[keyof typeof AudienceCondition];
 
 export type QuestionType =
   | "multipleChoice"
@@ -165,12 +174,18 @@ export interface Section {
   questions: Question[];
 }
 
-export type Condition = ArtistCondition | AudienceCondition | undefined;
+export type Condition = ArtistCondition | undefined;
 
 export interface SurveyDefinition {
   id: string;
   title: string;
   sections: Section[];
+}
+
+export interface PoemSurveyDefinition extends SurveyDefinition {}
+
+export interface PoemSurveyAnswers extends SurveyAnswers {
+  poemId: string;
 }
 
 export type AnswerValue = string | string[] | number | null;

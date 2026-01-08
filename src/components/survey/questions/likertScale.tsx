@@ -13,11 +13,11 @@ const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
     <div className="mb-4 space-y-4">
       <p
         className={
-          `text-main ` + (question.sideTitle ? " block md:hidden" : "")
+          `text-main h-max` + (question.sideTitle ? " block md:hidden" : "")
         }
       >
         {question.question}
-        <span className="text-red-700">{question.required ? "*" : ""}</span>
+        {question.required && <span className="text-red-700">*</span>}
       </p>
 
       <RadioGroup.Root
@@ -48,18 +48,18 @@ const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
               className={
                 `text-sub  ` +
                 (question.sideTitle
-                  ? " hidden h-0 md:block md:h-full md:w-24"
+                  ? " hidden h-0 md:block md:h-full w-full md:w-24 lg:w-32 text-left "
                   : " hidden ")
               }
             >
               {!question.removeValues && (
                 <div className="h-0 md:h-10 md:mb-3"></div>
               )}
-              <div className=" flex items-center">
-                {question.question}
-                <span className="text-red-700">
-                  {question.required ? "*" : ""}
-                </span>
+              <div className="flex items-center w-full">
+                <p>
+                  {question.question}
+                  {question.required && <span className="text-red-700">*</span>}
+                </p>
               </div>
             </div>
             {question.options.map((opt) => (
@@ -70,20 +70,20 @@ const LikertScale: React.FC<Props> = ({ question, value, onChange }) => {
                 /* mobile layout: horizontal row */
 
                 /* desktop layout: stacked column */
-                md:flex md:flex-col md:items-center md:text-center
+                md:flex md:flex-col md:items-center md:text-center md:justify-center h-full
               ` +
                   (question.doNotCollapse
-                    ? " items-center flex flex-col text-center"
+                    ? " items-center flex flex-col text-center md:justify-center"
                     : " flex items-center gap-3 text-left ")
                 }
               >
                 {/* Radio */}
                 <RadioGroup.Item
                   value={opt.value.toString()}
-                  className="cursor-pointer flex-shrink-0"
+                  className="cursor-pointer flex-shrink-0 flex items-center justify-center md:justify-self-center"
                 >
                   <RadioGroup.ItemHiddenInput />
-                  <RadioGroup.ItemIndicator className="border border-light-grey-1 rounded-full w-4 h-4 focus:border-grey focus:border-2" />
+                  <RadioGroup.ItemIndicator className="border border-light-grey-1  rounded-full w-4 h-4 focus:border-grey focus:border-2" />
                 </RadioGroup.Item>
 
                 {/* Label */}

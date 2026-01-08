@@ -23,7 +23,8 @@ const ArtistStep1 = () => {
   const randomIndex = Math.floor(Math.random() * (Passages?.length || 1));
   const selected = Passages?.[randomIndex] ?? "";
   const [passage] = useState<Passage>(selected);
-  const userType = userData?.data.condition as ArtistCondition;
+  const userType =
+    (userData as any)?.data?.condition || ("CONTROL" as ArtistCondition);
   const [sparkMessages, setSparkMessages] = useState<Message[]>([]);
   const [sparkNotes, setSparkNotes] = useState<string>("");
 

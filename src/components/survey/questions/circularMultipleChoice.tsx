@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { RadioGroup } from "@chakra-ui/react"; // keep Radix RadioGroup
 import type { CircularMultipleChoiceQuestion } from "../../../types";
 
@@ -9,8 +9,24 @@ interface Props {
 }
 
 const GenevaWheel: React.FC<Props> = ({ question, value, onChange }) => {
-  const radius = 120;
-  const indicatorSize = 24;
+  const defaultRadius = 100;
+  const smallRadius = 50;
+  const [radius, setRadius] = useState<number>(defaultRadius);
+
+  // make indicator a bit smaller on small screens
+  const indicatorSize = radius > 80 ? 24 : 18;
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 639px)");
+    const update = () => setRadius(mql.matches ? smallRadius : defaultRadius);
+    update();
+    if (mql.addEventListener) mql.addEventListener("change", update);
+    else mql.addListener(update);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener("change", update);
+      else mql.removeListener(update);
+    };
+  }, []);
   const options = question.options;
   const optionCount = options.length;
 
@@ -48,8 +64,10 @@ const GenevaWheel: React.FC<Props> = ({ question, value, onChange }) => {
               const y = radius + radius * Math.sin(angle) - indicatorSize / 2;
 
               // Position label outside the circle
-              const labelX = radius + (radius + 55) * Math.cos(angle);
-              const labelY = radius + (radius + 40) * Math.sin(angle);
+              const labelX =
+                radius + (radius + (radius < 100 ? 45 : 55)) * Math.cos(angle);
+              const labelY =
+                radius + (radius + (radius < 100 ? 30 : 40)) * Math.sin(angle);
 
               return (
                 <React.Fragment key={option}>
@@ -70,7 +88,7 @@ const GenevaWheel: React.FC<Props> = ({ question, value, onChange }) => {
 
                   {/* Label */}
                   <div
-                    className="absolute text-sm text-center w-24 pointer-events-none"
+                    className="absolute text-xs md:text-sm text-center w-18 md:w-24 pointer-events-none"
                     style={{
                       left: `${labelX}px`,
                       top: `${labelY}px`,

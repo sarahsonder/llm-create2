@@ -7,10 +7,17 @@ import { toaster } from "../../components/ui/toaster";
 
 interface Props {
   survey: SurveyDefinition;
+  noProgressBar?: boolean;
+  buttonText?: string;
   onSubmit: (answers: SurveyAnswers) => void;
 }
 
-const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
+const SurveyScroll: React.FC<Props> = ({
+  survey,
+  noProgressBar,
+  onSubmit,
+  buttonText,
+}) => {
   const [answers, setAnswers] = useState<SurveyAnswers>({});
   const context = useContext(DataContext);
   if (!context) {
@@ -74,19 +81,21 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
   return (
     <div className="h-full w-full flex flex-col py-4">
       {/* Progress Bar */}
-      <div className="w-full">
-        <Progress.Root
-          value={progress}
-          className="flex flex-row mb-6 items-center space-x-2"
-        >
-          <Progress.Track className="w-full bg-white border border-light-grey-3">
-            <Progress.Range className="bg-light-grey-1" />
-          </Progress.Track>
-          <Progress.ValueText className="text-sub font-base text-grey">
-            {progress}%
-          </Progress.ValueText>
-        </Progress.Root>
-      </div>
+      {!noProgressBar && (
+        <div className="w-full">
+          <Progress.Root
+            value={progress}
+            className="flex flex-row mb-6 items-center space-x-2"
+          >
+            <Progress.Track className="w-full bg-white border border-light-grey-3">
+              <Progress.Range className="bg-light-grey-1" />
+            </Progress.Track>
+            <Progress.ValueText className="text-sub font-base text-grey">
+              {progress}%
+            </Progress.ValueText>
+          </Progress.Root>
+        </div>
+      )}
 
       {/* Sections */}
       <div className="w-full h-100vh space-y-10 overflow-y-scroll">
@@ -109,14 +118,16 @@ const SurveyScroll: React.FC<Props> = ({ survey, onSubmit }) => {
         ))}
 
         {/* Submit Button */}
-        <Button
-          className={`btn-primary self-center mt-8 ${
-            isSurveyComplete ? "" : "opacity-40 cursor-not-allowed"
-          }`}
-          onClick={handleSubmit}
-        >
-          Submit
-        </Button>
+        <div className="w-full place-content-end flex">
+          <Button
+            className={`btn-primary mt-8 ${
+              isSurveyComplete ? "" : "opacity-40 cursor-not-allowed"
+            }`}
+            onClick={handleSubmit}
+          >
+            {buttonText || "Submit"}
+          </Button>
+        </div>
       </div>
     </div>
   );

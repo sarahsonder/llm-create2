@@ -55,7 +55,7 @@ export default function ChatTab({
     throw new Error("Component must be used within a DataContext.Provider");
   }
   const { userData } = context;
-  const condition = userData?.data.condition;
+  const condition = (userData as any)?.data?.condition || "CONTROL";
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 

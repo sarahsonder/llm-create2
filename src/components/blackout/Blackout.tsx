@@ -136,20 +136,20 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-6">
         {/* Passage Side */}
         <div
-          className="leading-relaxed flex flex-wrap select-none h-max"
+          className="leading-relaxed text-justify select-none h-max"
           onCopy={(e) => e.preventDefault()}
         >
           {words.map((word, i) => {
             const isSelected = selectedWordIndexes.includes(i);
             const textColor = isSelected
-              ? "text-main text-light-grey-1"
+              ? "text-main text-light-grey-1 hover:underline"
               : "text-main hover:text-blue-800 hover:underline";
 
             return (
               <span
                 key={i}
                 onClick={() => toggleSelect(i)}
-                className={`cursor-pointer transition px-1 duration-200 ${textColor}`}
+                className={`cursor-pointer transition duration-200 ${textColor}`}
               >
                 {word + " "}
               </span>
@@ -159,19 +159,19 @@ const BlackoutPoetry: React.FC<BlackoutProps> = ({
 
         {/* Blackout Preview Side */}
         <div
-          className="leading-relaxed flex flex-wrap select-none h-max"
+          className="leading-relaxed text-justify select-none h-max"
           onCopy={(e) => e.preventDefault()}
         >
           {words.map((word, i) => {
             const isSelected = selectedWordIndexes.includes(i);
             const blackoutStyle = isSelected
               ? "text-main text-dark-grey"
-              : "text-main text-dark-grey bg-dark-grey";
+              : "text-main text-dark-grey bg-dark-grey py-1";
 
             return (
               <span
                 key={i}
-                className={`px-1 transition duration-200 ${blackoutStyle}`}
+                className={` transition duration-200 ${blackoutStyle}`}
               >
                 {word + " "}
               </span>

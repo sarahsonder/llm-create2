@@ -1,111 +1,53 @@
-import PageTemplate from "../../../components/shared/pages/page";
+import PageTemplate from "../../../components/shared/pages/audiencePages/scrollFullPage";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import { useContext } from "react";
+import { DataContext } from "../../../App";
+import { Passages } from "../../../consts/passages";
 
-const predefinedPoems = [
-  {
-    id: 1,
-    passage: `The wind whispers over hollow bones and buried wishes`,
-    selectedIndexes: [1, 2, 4, 5],
-  },
-  {
-    id: 2,
-    passage: `Beneath shadows, the moon remembers names we forget`,
-    selectedIndexes: [0, 3, 5, 6],
-  },
-  {
-    id: 3,
-    passage: `The silence stretched until it became a song of stars`,
-    selectedIndexes: [1, 2, 5, 7],
-  },
-];
-
-const renderBlackout = (
-  poemid: number,
-  passage: string,
-  selectedIndexes: number[],
-  onClick: () => void
-) => {
-  const words = passage.split(" ");
-  return (
-    <div
-      onClick={onClick}
-      className="cursor-pointer bg-white text-main rounded-lg w-full p-4 border border-light-grey-2 text-base flex flex-col space-y-2 transition hover:border-grey hover:ring-1 hover:ring-grey"
-    >
-      <div className="text-h1 text-lg">Poem {poemid}</div>
-      <div className="flex flex-wrap leading-relaxed">
-        {words.map((word, i) => {
-          const isVisible = selectedIndexes.includes(i);
-          return (
-            <span
-              key={i}
-              className={
-                `cursor-pointer transition px-1 duration-200 text-main ` +
-                (isVisible ? "" : "bg-dark-grey")
-              }
-            >
-              {word + ` `}
-            </span>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-const AudienceStep1: React.FC = () => {
+const AudiencePassage = () => {
   const navigate = useNavigate();
+  const context = useContext(DataContext);
+
+  if (!context) {
+    throw new Error("Component must be used within a DataContext.Provider");
+  }
+
+  const { userData, addRoleSpecificData } = context;
+
+  const passageId = (userData as any)?.data?.passage || "1";
+
+  const passage = Passages.find((p) => p.id === passageId) || Passages[0];
 
   const handleSubmit = () => {
-    navigate("/audience/step-2");
-  };
-  const [revealedPoems, setRevealedPoems] = useState<number[]>([1, 2, 3]);
-
-  const togglePoemReveal = (id: number) => {
-    setRevealedPoems((prev) =>
-      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
-    );
+    addRoleSpecificData({
+      timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+    });
+    navigate("/audience/poems");
   };
 
   return (
     <PageTemplate
-      background="bg3"
-      title="Step 1: Read"
-      description="Take this time to familiarize yourself with the poems and form thoughts. Click on each poem to open and close it."
-      duration={240}
+      title="Step 1: Familiarize yourself with the text"
+      description="This is your time to familiarize yourself with the text. After this step, you will read several blackout poems created from this text and answer a couple of questions about each poem."
+      duration={30}
+      autoRedirectDuration={240}
       afterDuration={handleSubmit}
+      buttonText="Begin Reading Poems"
     >
-      <div className="justify-self-center grid grid-cols-1 h-max md:h-full sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl">
-        {predefinedPoems.map((poem) => (
-          <div key={poem.id} className="flex justify-center w-full">
-            {revealedPoems.includes(poem.id) ? (
-              renderBlackout(poem.id, poem.passage, poem.selectedIndexes, () =>
-                togglePoemReveal(poem.id)
-              )
-            ) : (
-              <div
-                onClick={() => togglePoemReveal(poem.id)}
-                className="flex flex-col w-full h-max space-y-4 items-center hover:opacity-40"
-              >
-                <div className="w-8 h-8 relative">
-                  <svg
-                    className="fill-dark-grey w-full h-full"
-                    viewBox="0 0 92 106"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M46 0L56.1221 35.468L91.8993 26.5L66.2442 53L91.8993 79.5L56.1221 70.532L46 106L35.8779 70.532L0.100655 79.5L25.7558 53L0.100655 26.5L35.8779 35.468L46 0Z" />
-                  </svg>
-                </div>
-                <div className="text-h1 text-lg text-dark-grey">
-                  Poem {poem.id}
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
+        <p
+          className="text-main text-justify text-sm md:text-base select-none"
+          onCopy={(e) => e.preventDefault()}
+        >
+          {passage.text}
+        </p>
+        <p className="text-xs text-grey text-left pt-2">
+          <span className="italic">{'"' + passage.title + '"'}</span>
+          <span>{", " + passage.author + " from The New York Times"}</span>
+        </p>
       </div>
     </PageTemplate>
   );
 };
 
-export default AudienceStep1;
+export default AudiencePassage;

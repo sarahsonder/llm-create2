@@ -16,8 +16,7 @@ const ArtistTransitionStep2 = () => {
   }
 
   const { userData, addRoleSpecificData } = context;
-  const condition = userData?.data.condition;
-
+  const condition = (userData as any)?.data?.condition || "CONTROL";
   const handleSubmit = () => {
     addRoleSpecificData({
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],

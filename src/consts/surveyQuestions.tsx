@@ -1,4 +1,4 @@
-import type { SurveyDefinition } from "../types";
+import type { PoemSurveyDefinition, SurveyDefinition } from "../types";
 
 export const ArtistPreSurveyQuestions: SurveyDefinition = {
   id: "survey1",
@@ -625,6 +625,227 @@ export const ArtistPostSurveyQuestions: SurveyDefinition = {
             "We’re still improving our design and would love to hear from you. If you noticed any bugs, confusing instructions, or anything else, please let us know!",
           placeholder: "Type your answer here...",
           required: false,
+        },
+      ],
+    },
+  ],
+};
+
+export const AudiencePreSurveyQuestions: SurveyDefinition = {
+  id: "survey1",
+  title: "Audience Pre-Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "Demographic Survey",
+      questions: [
+        {
+          id: "q2",
+          type: "likertScale",
+          question: "I engage in creative tasks ____.",
+          options: [
+            { label: "Very Rarely or Never", value: 1 },
+            { label: "Rarely", value: 2 },
+            { label: "Sometimes", value: 3 },
+            { label: "Often", value: 4 },
+            { label: "Very Often or Always", value: 5 },
+          ],
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "section2",
+      title: "Poetry Familiarity",
+      description:
+        "Please indicate your level of agreement with the following statements:",
+      questions: [
+        {
+          id: "q1",
+          type: "likertScale",
+          question: "I consider myself a creative person.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+        },
+        {
+          id: "q3",
+          type: "likertScale",
+          question: "I consider myself knowledgeable about poetry.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+          removeValues: true,
+        },
+        {
+          id: "q4",
+          type: "likertScale",
+          question: "I usually understand poetry.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+          removeValues: true,
+        },
+        {
+          id: "q5",
+          type: "likertScale",
+          question: "I like poetry.             ",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+          removeValues: true,
+        },
+      ],
+    },
+  ],
+};
+
+export const AudiencePoemQuestions: PoemSurveyDefinition = {
+  id: "survey1",
+  title: "Audience Pre-Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "Demographic Survey",
+      questions: [
+        {
+          id: "q1",
+          type: "circularChoice",
+          question:
+            "Select the emotion that best describes what you felt while reading the poem. ",
+          options: [
+            "Pride",
+            "Joy",
+            "Amusement",
+            "Pleasure",
+            "Relief",
+            "Interest",
+            "Surprise",
+            "Anger",
+            "Irritation",
+            "Disgust",
+            "Sadness",
+            "Despair",
+            "Fear",
+            "Anxiety",
+          ],
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "openEnded",
+          question:
+            "Were there any other emotions you felt while reading the poem? If so, please share them here.",
+          placeholder: "Type your answer here...",
+          required: false,
+        },
+        {
+          id: "q3",
+          type: "circularChoice",
+          question:
+            "Select the emotion that best describes what you think the poet was trying to convey through the poem.",
+          options: [
+            "Pride",
+            "Joy",
+            "Amusement",
+            "Pleasure",
+            "Relief",
+            "Interest",
+            "Surprise",
+            "Anger",
+            "Irritation",
+            "Disgust",
+            "Sadness",
+            "Despair",
+            "Fear",
+            "Anxiety",
+          ],
+          required: true,
+        },
+        {
+          id: "q4",
+          type: "openEnded",
+          question:
+            "Were there any other emotions you think he poet was trying to convey through the poem? If so, please share them here.",
+          placeholder: "Type your answer here...",
+          required: false,
+        },
+      ],
+    },
+    {
+      id: "section2",
+      title: "Poetry Vibes",
+      description:
+        "Please indicate your level of agreement with the following statements:",
+      questions: [
+        {
+          id: "q5",
+          type: "likertScale",
+          question: "The poem evoked an emotional response in me.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+        },
+        {
+          id: "q6",
+          type: "likertScale",
+          question: "I felt connected to the poet.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+          removeValues: true,
+        },
+        {
+          id: "q7",
+          type: "likertScale",
+          question:
+            "I would be interested in reading more work from this poet.",
+          options: [
+            { label: "Strongly Disagree", value: 1 },
+            { label: "Disagree", value: 2 },
+            { label: "Neutral", value: 3 },
+            { label: "Agree", value: 4 },
+            { label: "Strongly Agree", value: 5 },
+          ],
+          required: true,
+          sideTitle: true,
+          removeValues: true,
         },
       ],
     },

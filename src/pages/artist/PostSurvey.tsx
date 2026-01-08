@@ -89,7 +89,7 @@ const ArtistPostSurvey = () => {
     sections: ArtistPostSurveyQuestions.sections.filter(
       (section) =>
         !section.conditions || // no conditions → always include
-        section.conditions.includes(userData?.data.condition)
+        section.conditions.includes((userData as any)?.data?.condition)
     ),
   };
 
