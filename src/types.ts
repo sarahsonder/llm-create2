@@ -104,13 +104,6 @@ export interface Passage {
   text: string;
 }
 
-// export const AudienceCondition = {
-//   NO_KNOWLEDGE: "NO_KNOWLEDGE",
-//   FULL_TRANSPARENCY: "FULL_TRANSPARENCY",
-// } as const;
-// export type AudienceCondition =
-//   (typeof AudienceCondition)[keyof typeof AudienceCondition];
-
 export type QuestionType =
   | "multipleChoice"
   | "openEnded"
