@@ -14,7 +14,8 @@ const AUDIENCE_COLLECTION = "audience";
 const AUDIENCE_SURVEY_COLLECTION = "audienceSurvey";
 const AUDIENCE_INCOMPLETE_SESSION_COLLECTION = "audienceIncompleteSession";
 
-router.post("/autosave", async (req, res) => {
+// ARTIST ROUTES
+router.post("/artist/autosave", async (req, res) => {
   try {
     const { sessionId, data } = req.body;
 
@@ -57,7 +58,7 @@ router.post("/autosave", async (req, res) => {
   }
 });
 
-router.post("/commit-session", async (req, res) => {
+router.post("/artist/commit-session", async (req, res) => {
   try {
     const { artistData, surveyData, poemData, sessionId } = req.body;
 
@@ -106,5 +107,7 @@ router.post("/commit-session", async (req, res) => {
     res.status(500).json({ error: "Batch commit failed" });
   }
 });
+
+// AUDIENCE ROUTES
 
 export default router;
