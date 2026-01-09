@@ -3,10 +3,16 @@ import { db, FieldValue } from "../firebase/firebase";
 
 const router = express.Router();
 
+// ARTIST COLLECTIONS
 const ARTIST_COLLECTION = "artist";
 const ARTIST_SURVEY_COLLECTION = "artistSurvey";
 const POEM_COLLECTION = "poem";
-const INCOMPLETE_SESSION_COLLECTION = "incompleteSession";
+const ARTIST_INCOMPLETE_SESSION_COLLECTION = "artistIncompleteSession";
+
+// AUDIENCE COLLECTIONS
+const AUDIENCE_COLLECTION = "audience";
+const AUDIENCE_SURVEY_COLLECTION = "audienceSurvey";
+const AUDIENCE_INCOMPLETE_SESSION_COLLECTION = "audienceIncompleteSession";
 
 router.post("/autosave", async (req, res) => {
   try {
@@ -32,7 +38,9 @@ router.post("/autosave", async (req, res) => {
       ? statusMap[data.data.timeStamps.length] || "started"
       : "started";
 
-    const ref = db.collection(INCOMPLETE_SESSION_COLLECTION).doc(sessionId);
+    const ref = db
+      .collection(ARTIST_INCOMPLETE_SESSION_COLLECTION)
+      .doc(sessionId);
     const payload = {
       sessionId,
       role: data.role,
@@ -75,7 +83,7 @@ router.post("/commit-session", async (req, res) => {
     const surveyRef = db.collection(ARTIST_SURVEY_COLLECTION).doc();
     const poemRef = db.collection(POEM_COLLECTION).doc();
     const incompleteRef = db
-      .collection(INCOMPLETE_SESSION_COLLECTION)
+      .collection(ARTIST_INCOMPLETE_SESSION_COLLECTION)
       .doc(sessionId);
 
     const artist = {
