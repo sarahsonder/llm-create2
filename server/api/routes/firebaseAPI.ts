@@ -237,4 +237,79 @@ router.get("/audience/poems", async (req, res) => {
   }
 });
 
+router.post("/audience/artist-statements", async (req, res) => {
+  try {
+    const { poemIds } = req.body;
+
+    if (!poemIds || !Array.isArray(poemIds) || poemIds.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "Missing or invalid poemIds array" });
+    }
+
+    // Get statements for the requested poem IDs
+    const poemStatements = await Promise.all(
+      poemIds.map((id: string) => getArtistStatement(id))
+    );
+
+    // Get all poems to find 4 random other statements
+    const allPoemsSnapshot = await db.collection(POEM_COLLECTION).get();
+    const requestedPoemIdSet = new Set(poemIds);
+
+    // Filter out the requested poems
+    const otherPoemIds = allPoemsSnapshot.docs
+      .map((doc) => doc.id)
+      .filter((id) => !requestedPoemIdSet.has(id));
+
+    // Fisher-Yates shuffle for random selection
+    for (let i = otherPoemIds.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [otherPoemIds[i], otherPoemIds[j]] = [otherPoemIds[j], otherPoemIds[i]];
+    }
+
+    // Get statements for 4 random other poems
+    const randomPoemIds = otherPoemIds.slice(0, 4);
+    const randomStatementsResults = await Promise.all(
+      randomPoemIds.map((id) => getArtistStatement(id))
+    );
+    const randomStatements = randomStatementsResults
+      .filter((s): s is { poemId: string; statement: string } => s !== null)
+      .map((s) => s.statement);
+
+    res.json({
+      poemStatements,
+      randomStatements,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to get artist statements" });
+  }
+});
+
+const getArtistStatement = async (
+  poemId: string
+): Promise<{ poemId: string; statement: string } | null> => {
+  // 1. get artistId from poemId
+  const poemDoc = await db.collection(POEM_COLLECTION).doc(poemId).get();
+  if (!poemDoc.exists) return null;
+
+  const artistId = poemDoc.data()?.artistId;
+  if (!artistId) return null;
+
+  // 2. query survey collection for matching artistId
+  const surveySnapshot = await db
+    .collection(ARTIST_SURVEY_COLLECTION)
+    .where("artistId", "==", artistId)
+    .limit(1)
+    .get();
+
+  if (surveySnapshot.empty) return null;
+
+  // 3. extract q14 from postAnswers
+  const statement = surveySnapshot.docs[0].data()?.postSurveyAnswers.q14;
+  if (!statement) return null;
+
+  return { poemId, statement };
+};
+
 export default router;
