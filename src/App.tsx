@@ -36,6 +36,7 @@ import type {
   Audience,
   ArtistSurvey,
   AudienceSurvey,
+  SurveyAnswers,
 } from "./types";
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
@@ -53,6 +54,7 @@ interface DataContextValue {
   addPostSurvey: (
     updates: Partial<ArtistSurvey> | Partial<AudienceSurvey>
   ) => void;
+  addPoemEvaluation: (poemId: string, answers: SurveyAnswers) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
 }
@@ -201,6 +203,32 @@ function App() {
     });
   };
 
+  const addPoemEvaluation = (poemId: string, answers: SurveyAnswers) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error(
+          "Tried to update poem evaluation when userData is null."
+        );
+      }
+
+      const poemAnswer = { poemId, ...answers };
+      const existingPoemAnswers = prev.data.surveyResponse?.poemAnswers ?? [];
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            poemAnswers: [...existingPoemAnswers, poemAnswer],
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
   // Flush saves on tab hide/close
   useEffect(() => {
     const onVisibility = () => {
@@ -231,6 +259,7 @@ function App() {
         addRoleSpecificData,
         addPostSurvey,
         addPreSurvey,
+        addPoemEvaluation,
         sessionId,
         flushSaves,
       }}

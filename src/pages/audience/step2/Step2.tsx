@@ -9,6 +9,7 @@ import { AudiencePoemQuestions } from "../../../consts/surveyQuestions";
 import { Button } from "@chakra-ui/react";
 import { LuEyeClosed } from "react-icons/lu";
 import { HiOutlineDocumentText } from "react-icons/hi2";
+import type { SurveyAnswers } from "../../../types";
 
 const AudiencePoems = () => {
   const [currPoem, setCurrPoem] = useState(0);
@@ -22,7 +23,7 @@ const AudiencePoems = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addRoleSpecificData } = context;
+  const { userData, addRoleSpecificData, addPoemEvaluation } = context;
 
   const passageId = (userData as any)?.data?.passage || "1";
 
@@ -55,10 +56,13 @@ const AudiencePoems = () => {
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (answers: SurveyAnswers) => {
+    addPoemEvaluation(String(currPoem), answers);
+
     addRoleSpecificData({
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
+
     if (currPoem < poems.length - 1) {
       setCurrPoem(currPoem + 1);
       const container = document.querySelector(

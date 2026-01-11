@@ -20,6 +20,7 @@ const AudiencePassage = () => {
 
   const handleSubmit = () => {
     addRoleSpecificData({
+      passageId: passageId,
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
     navigate("/audience/poems");
