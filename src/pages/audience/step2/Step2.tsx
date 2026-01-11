@@ -1,20 +1,28 @@
 import PageTemplate from "../../../components/shared/pages/audiencePages/scrollFullPage";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { DataContext } from "../../../App";
 import { Passages } from "../../../consts/passages";
-import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudiencePoemQuestions } from "../../../consts/surveyQuestions";
-import { Button } from "@chakra-ui/react";
+import { Button, Spinner } from "@chakra-ui/react";
 import { LuEyeClosed } from "react-icons/lu";
 import { HiOutlineDocumentText } from "react-icons/hi2";
 import type { SurveyAnswers } from "../../../types";
+
+interface FetchedPoem {
+  poemId: string;
+  text: number[];
+}
 
 const AudiencePoems = () => {
   const [currPoem, setCurrPoem] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showPassage, setShowPassage] = useState(false);
+  const [poems, setPoems] = useState<FetchedPoem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
   const navigate = useNavigate();
   const context = useContext(DataContext);
@@ -23,14 +31,44 @@ const AudiencePoems = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addPoemEvaluation } = context;
+  const { userData, addPoemEvaluation, addRoleSpecificData } = context;
 
   const passageId = (userData as any)?.data?.passageId || "1";
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const words = passage.text.split(" ");
 
-  const poems = Poems;
+  // Fetch poems from API
+  useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
+    const fetchPoems = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch(
+          `/api/firebase/audience/poems?passageId=${encodeURIComponent(
+            passageId
+          )}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch poems");
+        }
+        const data = await response.json();
+        setPoems(data.poems);
+
+        // Save the poem IDs to user data
+        const poemIds = data.poems.map((p: FetchedPoem) => p.poemId);
+        addRoleSpecificData({ poemsViewed: poemIds });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load poems");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPoems();
+  }, []);
 
   useEffect(() => {
     const container = document.querySelector(
@@ -57,7 +95,7 @@ const AudiencePoems = () => {
   }, []);
 
   const handleSubmit = (answers: SurveyAnswers) => {
-    addPoemEvaluation(String(currPoem), answers, {
+    addPoemEvaluation(poems[currPoem].poemId, answers, {
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
 
@@ -75,6 +113,32 @@ const AudiencePoems = () => {
     }
     navigate("/audience/passage");
   };
+
+  if (isLoading) {
+    return (
+      <PageTemplate
+        title="Step 2: Read the blackout poems"
+        description="Loading poems..."
+      >
+        <div className="flex justify-center items-center py-20">
+          <Spinner size="xl" />
+        </div>
+      </PageTemplate>
+    );
+  }
+
+  if (error || poems.length === 0) {
+    return (
+      <PageTemplate
+        title="Step 2: Read the blackout poems"
+        description="Something went wrong :("
+      >
+        <div className="flex justify-center items-center py-20 text-red-500">
+          {error || "No poems available for this passage"}
+        </div>
+      </PageTemplate>
+    );
+  }
 
   return (
     <PageTemplate
