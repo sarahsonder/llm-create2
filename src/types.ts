@@ -14,17 +14,6 @@ export interface ArtistSurvey {
   postAnswers: SurveyAnswers;
 }
 
-export interface AudiencePoem {
-  id: string;
-  poemId: string;
-}
-
-// export interface SurveyQuestion {
-//   id: string;
-//   q: string;
-//   answerType:
-// }
-
 export interface Poem {
   passageId: string; // passageId in Passage.id
   passage: Passage;
@@ -75,7 +64,7 @@ export type Role = (typeof Role)[keyof typeof Role];
 export interface Audience {
   passageId: string;
   surveyResponse: AudienceSurvey;
-  poemsViewed: AudiencePoem[];
+  poemsViewed: string[];
   timeStamps: Date[];
 }
 

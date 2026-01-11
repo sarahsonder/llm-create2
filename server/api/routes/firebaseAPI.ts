@@ -197,4 +197,44 @@ router.post("/audience/commit-session", async (req, res) => {
   }
 });
 
+router.get("/audience/poems", async (req, res) => {
+  try {
+    const { passageId } = req.query;
+
+    if (!passageId || typeof passageId !== "string") {
+      return res.status(400).json({ error: "Missing or invalid passageId" });
+    }
+
+    // query all poems with the given passageId
+    const snapshot = await db
+      .collection(POEM_COLLECTION)
+      .where("passageId", "==", passageId)
+      .get();
+
+    if (snapshot.empty) {
+      return res.status(404).json({ error: "No poems found for this passage" });
+    }
+
+    // map to { poemId, text } format
+    const allPoems = snapshot.docs.map((doc) => ({
+      poemId: doc.id,
+      text: doc.data().text as number[],
+    }));
+
+    // Fisher-Yates shuffle for true randomness
+    for (let i = allPoems.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [allPoems[i], allPoems[j]] = [allPoems[j], allPoems[i]];
+    }
+
+    // Take first 4 (or fewer if not enough poems exist)
+    const randomPoems = allPoems.slice(0, 4);
+
+    res.json({ poems: randomPoems });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to get poems" });
+  }
+});
+
 export default router;
