@@ -229,8 +229,8 @@ function App() {
           ...additionalData,
           surveyResponse: {
             ...prev.data.surveyResponse,
+            poemAnswers: [...existingPoemAnswers, poemAnswer],
           },
-          poemAnswers: [...existingPoemAnswers, poemAnswer],
         },
       };
       autoSave(next as UserData);
