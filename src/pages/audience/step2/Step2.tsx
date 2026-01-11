@@ -23,7 +23,7 @@ const AudiencePoems = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addRoleSpecificData, addPoemEvaluation } = context;
+  const { userData, addPoemEvaluation } = context;
 
   const passageId = (userData as any)?.data?.passage || "1";
 
@@ -57,9 +57,7 @@ const AudiencePoems = () => {
   }, []);
 
   const handleSubmit = (answers: SurveyAnswers) => {
-    addPoemEvaluation(String(currPoem), answers);
-
-    addRoleSpecificData({
+    addPoemEvaluation(String(currPoem), answers, {
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
 

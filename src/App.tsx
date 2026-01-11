@@ -54,7 +54,11 @@ interface DataContextValue {
   addPostSurvey: (
     updates: Partial<ArtistSurvey> | Partial<AudienceSurvey>
   ) => void;
-  addPoemEvaluation: (poemId: string, answers: SurveyAnswers) => void;
+  addPoemEvaluation: (
+    poemId: string,
+    answers: SurveyAnswers,
+    additionalData?: Partial<Audience>
+  ) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
 }
@@ -203,7 +207,11 @@ function App() {
     });
   };
 
-  const addPoemEvaluation = (poemId: string, answers: SurveyAnswers) => {
+  const addPoemEvaluation = (
+    poemId: string,
+    answers: SurveyAnswers,
+    additionalData?: Partial<Audience>
+  ) => {
     setUserData((prev: any) => {
       if (!prev || !prev.data) {
         throw new Error(
@@ -218,10 +226,11 @@ function App() {
         ...prev,
         data: {
           ...prev.data,
+          ...additionalData,
           surveyResponse: {
             ...prev.data.surveyResponse,
-            poemAnswers: [...existingPoemAnswers, poemAnswer],
           },
+          poemAnswers: [...existingPoemAnswers, poemAnswer],
         },
       };
       autoSave(next as UserData);
