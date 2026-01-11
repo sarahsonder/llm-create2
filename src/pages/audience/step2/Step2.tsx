@@ -56,6 +56,9 @@ const AudiencePoems = () => {
   }, []);
 
   const handleSubmit = () => {
+    addRoleSpecificData({
+      timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
+    });
     if (currPoem < poems.length - 1) {
       setCurrPoem(currPoem + 1);
       const container = document.querySelector(
@@ -68,9 +71,6 @@ const AudiencePoems = () => {
       }
       return;
     }
-    addRoleSpecificData({
-      timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
-    });
     navigate("/audience/passage");
   };
 

@@ -124,9 +124,12 @@ router.post("/audience/autosave", async (req, res) => {
       2: "consent",
       3: "pre-survey",
       4: "instructions",
-      5: "passage",
-      6: "poems",
-      7: "post-survey",
+      5: "readPassage",
+      6: "poemEvaluation1",
+      7: "poemEvaluation2",
+      8: "poemEvaluation3",
+      9: "poemEvaluation4",
+      10: "post-survey",
     };
 
     const status = data.data?.timeStamps

@@ -81,16 +81,24 @@ function App() {
     setSessionId(id);
   }, []);
 
-  const enqueueAutosave = (data: UserData | null) => {
+  const autoSave = (data: UserData | null) => {
     if (!data || !sessionId) return;
 
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
-      await fetch("/api/firebase/artist/autosave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, data }),
-      });
+      if (data.role === "artist") {
+        await fetch("/api/firebase/artist/autosave", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, data }),
+        });
+      } else {
+        await fetch("/api/firebase/audience/autosave", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, data }),
+        });
+      }
     }, 500);
   };
 
@@ -128,7 +136,7 @@ function App() {
           ...updates,
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
       return next;
     });
   };
@@ -158,7 +166,7 @@ function App() {
           },
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
       return next;
     });
   };
@@ -188,7 +196,7 @@ function App() {
           },
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
       return next;
     });
   };
