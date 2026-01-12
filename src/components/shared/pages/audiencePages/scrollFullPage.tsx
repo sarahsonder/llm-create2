@@ -51,7 +51,7 @@ function PageTemplate({
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [showCountdownVisible, setShowCountdownVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [, setIsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
