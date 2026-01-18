@@ -51,7 +51,7 @@ function PageTemplate({
   const [isTimeUp, setIsTimeUp] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [showCountdownVisible, setShowCountdownVisible] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [_, setIsVisible] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const autoRedirectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -161,33 +161,51 @@ function PageTemplate({
             >
               <p>{title}</p>
               {buttonText && (
-                <div className="flex flex-col items-center justify-center min-w-[10rem]">
-                  <Button
-                    className={`btn-small px-4 text-center ${
-                      !isTimeUp ? "pointer-events-none opacity-50" : ""
-                    } font-sans`}
-                    onClick={handleContinueClick}
-                    disabled={!isTimeUp}
-                    style={{
-                      background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
-                    }}
-                  >
-                    {buttonText}
-                  </Button>
+                <>
+                  <div className="flex flex-col hidden md:block items-center justify-center min-w-[10rem]">
+                    <Button
+                      className={`btn-small px-4 text-center ${
+                        !isTimeUp ? "pointer-events-none opacity-50" : ""
+                      } font-sans`}
+                      onClick={handleContinueClick}
+                      disabled={!isTimeUp}
+                      style={{
+                        background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
+                      }}
+                    >
+                      {buttonText}
+                    </Button>
 
-                  <div className="h-4 mt-2 pt-2 flex items-center justify-center">
-                    {isTimeUp && countdown !== null && (
-                      <p
-                        className={`text-xs text-gray-500 text-center transition-opacity duration-700 ease-out
+                    <div className="h-4 mt-2 pt-2 flex items-center justify-center">
+                      {isTimeUp && countdown !== null && (
+                        <p
+                          className={`text-xs text-gray-500 text-center transition-opacity duration-700 ease-out
                         ${showCountdownVisible ? "opacity-100" : "opacity-0"}`}
-                      >
-                        Tap "{buttonText}" or <br /> continue in{" "}
-                        {formatTime(countdown)}
-                      </p>
-                    )}
+                        >
+                          Tap "{buttonText}" or <br /> continue in{" "}
+                          {formatTime(countdown)}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
+
+                  <div className="flex flex-col block md:hidden items-center justify-center min-w-[10rem]">
+                    <Button
+                      className={`btn-small px-4 text-center ${
+                        !isTimeUp ? "pointer-events-none opacity-50" : ""
+                      } font-sans`}
+                      onClick={handleContinueClick}
+                      disabled={!isTimeUp}
+                      style={{
+                        background: `linear-gradient(to right, #2F2F2F ${progress}%, #B3B3B3 ${progress}%)`,
+                      }}
+                    >
+                      {"Next"}
+                    </Button>
+                  </div>
+                </>
               )}
+
               {timerComponent && timerComponent}
             </div>
           )}

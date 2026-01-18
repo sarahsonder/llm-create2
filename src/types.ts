@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 // ARTIST TYPES
 export interface Artist {
   condition: ArtistCondition;
@@ -99,13 +101,16 @@ export type QuestionType =
   | "likertScale"
   | "circularChoice"
   | "range"
-  | "topXRanking";
+  | "topXRanking"
+  | "dragRank"
+  | "selectAll";
 
 export interface BaseQuestion {
   id: string;
   type: QuestionType;
   question: string;
   required?: boolean;
+  children?: ReactNode;
   answer?: any;
 }
 
@@ -146,7 +151,9 @@ export type Question =
   | LikertScaleQuestion
   | CircularMultipleChoiceQuestion
   | RangeQuestion
-  | TopXRankingQuestion;
+  | TopXRankingQuestion
+  | DragRankQuestion
+  | SelectAllQuestion;
 
 export interface Section {
   id: string;
@@ -180,6 +187,39 @@ export interface TopXRankingQuestion extends BaseQuestion {
   type: "topXRanking";
   options: string[];
   maxSelectable: number; // maximum number of selectable options
+}
+
+export interface DragRankItem {
+  id: string;
+  title: string;
+  content?: ReactNode;
+}
+
+export interface SelectAllItem {
+  id: string;
+  title: string;
+  content?: ReactNode;
+}
+
+export interface SelectAllQuestion extends BaseQuestion {
+  type: "selectAll";
+
+  items: SelectAllItem[];
+  defaultExpanded?: string[];
+  minSelections?: number;
+  maxSelections?: number;
+}
+
+export interface DragRankQuestion extends BaseQuestion {
+  type: "dragRank";
+  items: DragRankItem[];
+  // Optional initial order of item ids. When provided it will be used
+  // as the initial order unless a controlled `value` is passed to the component.
+  initialOrder?: string[];
+  // Optional list of item ids that should be expanded by default.
+  defaultExpanded?: string[];
+  // Optional flag to enable/disable dragging UI for this question.
+  draggable?: boolean;
 }
 
 export type UserData =

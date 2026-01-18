@@ -35,7 +35,7 @@ const AudiencePassage = () => {
       afterDuration={handleSubmit}
       buttonText="Begin Reading Poems"
     >
-      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
+      <div className="w-[400px] md:w-[500px] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
         <p
           className="text-main text-justify text-sm md:text-base select-none"
           onCopy={(e) => e.preventDefault()}
