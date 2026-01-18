@@ -4,6 +4,7 @@ import MultipleChoice from "./questions/multipleChoice";
 import OpenEnded from "./questions/openEnded";
 import LikertScale from "./questions/likertScale";
 import TopXRanking from "./questions/topX";
+import DragRank from "./questions/dragRank";
 import CircularMultipleChoice from "./questions/circularMultipleChoice";
 import Range from "./questions/range";
 
@@ -44,6 +45,10 @@ const QuestionRenderer: React.FC<Props> = ({ question, value, onChange }) => {
           value={value || []}
           onChange={onChange}
         />
+      );
+    case "dragRank":
+      return (
+        <DragRank question={question} value={value || []} onChange={onChange} />
       );
     default:
       return null;

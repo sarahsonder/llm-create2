@@ -19,6 +19,7 @@ import { nanoid } from "nanoid";
 import AudiencePreSurvey from "./pages/audience/PreSurvey";
 import AudienceCaptcha from "./pages/audience/AudienceCaptcha";
 import AudiencePoems from "./pages/audience/step2/Step2";
+import AudienceRanking from "./pages/audience/step2/Step2Rank";
 // import AudienceInstructions from "./pages/audience/instructions/Instructions";
 // ================= AUDIENCE PAGES =================
 // import ChooseYourCharacter from "./pages/ChooseYourCharacter";
@@ -42,6 +43,10 @@ import { Toaster } from "./components/ui/toaster";
 import { globalSaveQueue } from "./utils/saveQueue";
 import AudienceInstructions from "./pages/audience/instructions/Instructions";
 import AudiencePassage from "./pages/audience/step1/Step1";
+import AudienceAI from "./pages/audience/step2/Step2AIDisclousure";
+import AudiencePostSurvey from "./pages/audience/PostSurvey";
+import AudienceReRanking from "./pages/audience/step2/Step2AI";
+import AudienceThankYou from "./pages/audience/ThankYou";
 
 interface DataContextValue {
   userData: UserData | null;
@@ -255,6 +260,23 @@ function App() {
                     element={<AudiencePassage />}
                   />
                   <Route path="/audience/poems" element={<AudiencePoems />} />
+                  <Route
+                    path="/audience/ranking"
+                    element={<AudienceRanking />}
+                  />
+                  <Route path="/audience/ai" element={<AudienceAI />} />
+                  <Route
+                    path="/audience/ai-disclosure"
+                    element={<AudienceReRanking />}
+                  />
+                  <Route
+                    path="/audience/post-survey"
+                    element={<AudiencePostSurvey />}
+                  />
+                  <Route
+                    path="/audience/thank-you"
+                    element={<AudienceThankYou />}
+                  />
                   <Route
                     path="/artist/instructions"
                     element={<ArtistInstructions />}

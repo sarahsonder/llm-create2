@@ -71,7 +71,7 @@ const AudiencePoems = () => {
     addRoleSpecificData({
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
-    navigate("/audience/passage");
+    navigate("/audience/ranking");
   };
 
   return (
@@ -88,14 +88,14 @@ const AudiencePoems = () => {
             className="btn-small-inverted"
             onClick={() => setShowPassage(!showPassage)}
           >
-            {!showPassage ? <LuEyeClosed /> : <HiOutlineDocumentText />}
+            {showPassage ? <LuEyeClosed /> : <HiOutlineDocumentText />}
             <p className="hidden md:block">
-              {!showPassage ? "View Poem" : "View Passage"}
+              {showPassage ? "View as Poem" : "View as Passage"}
             </p>
           </Button>
         </div>
       </div>
-      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
+      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 py-4 md:py-8 self-center">
         <div className="leading-none text-justify select-none h-max">
           {words.map((word, i) => {
             const isVisible = poems[currPoem].text.includes(i);
@@ -140,7 +140,7 @@ const AudiencePoems = () => {
           className="fixed bottom-6 right-6 z-50 bg-dark-grey text-sm md:text-base text-white rounded-md p-3 hover:bg-opacity-80"
           aria-label="Scroll to top"
         >
-          ↑ Top
+          ↑ Return to Top
         </button>
       )}
     </PageTemplate>

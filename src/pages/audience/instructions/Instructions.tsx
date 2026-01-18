@@ -31,7 +31,7 @@ const AudienceInstructions = () => {
       nextButton={{ text: "Begin step 1", action: handleSubmit }}
     >
       <div className="w-full h-max flex-col space-y-6">
-        <div className="text-main mb-2">
+        <div className="text-main mb-2 text-justify">
           In this study, you will be introduced to blackout poetry and read a
           couple blackout poems! In a previous study, we asked participants to
           write their own blackout poems, and now you will read some of the

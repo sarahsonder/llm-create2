@@ -50,6 +50,8 @@ const SurveyScroll: React.FC<Props> = ({
         return answer;
       case "circularChoice":
         return answer;
+      case "dragRank":
+        return Array.isArray(answer) && answer.length === q.items.length;
       case "topXRanking":
         return (
           Array.isArray(answer) &&
@@ -118,7 +120,7 @@ const SurveyScroll: React.FC<Props> = ({
         ))}
 
         {/* Submit Button */}
-        <div className="w-full place-content-end flex">
+        <div className="w-full place-content-center flex">
           <Button
             className={`btn-primary mt-8 ${
               isSurveyComplete ? "" : "opacity-40 cursor-not-allowed"
