@@ -38,7 +38,7 @@ const Captcha = () => {
 
   const getRandomPassage = () => {
     const numPassages = Passages.length;
-    const randomIndex = Math.floor(Math.random() * numPassages);
+    const randomIndex = Math.floor(Math.random() * numPassages) + 1;
     return randomIndex.toString();
   };
 
