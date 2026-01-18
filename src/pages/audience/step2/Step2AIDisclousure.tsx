@@ -63,73 +63,65 @@ const AudienceAI = () => {
       sections: AudienceAIQuestionSurvey.sections.map((section: Section) => {
         if (section.id !== "section1") return section;
 
-        const questions = poems.flatMap((poem, i) => {
-          const poemId = `poem-${i}`;
+        const questions = [
+          {
+            id: "ai-select-all",
+            type: "selectAll",
+            question:
+              "Which poems do you believe were created with AI assistance?",
+            required: true,
+            items: [
+              ...poems.map((poem, i) => {
+                const poemId = `poem-${i}`;
 
-          return [
-            {
-              id: `ai-${poemId}-yn`,
-              type: "multipleChoice",
-              children: (
-                <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                  <div className="leading-none text-justify select-none h-max">
-                    {words.map((word, i) => {
-                      const isVisible = poem.text.includes(i);
-                      return (
-                        <span
-                          key={i}
-                          className={`text-sm transition duration-300 ${
-                            isVisible
-                              ? "text-black bg-white"
-                              : "text-transparent bg-dark-grey"
-                          }`}
-                        >
-                          {word + " "}
-                        </span>
-                      );
-                    })}
-                    <p className="text-xs text-grey text-left pt-2">
-                      <span className="italic">
-                        {'"' + passage.title + '"'}
-                      </span>
-                      <span>
-                        {", " + passage.author + " from The New York Times"}
-                      </span>
-                    </p>
-                  </div>
-                </div>
-              ),
-
-              question: `Was Poem ${i + 1} created with AI?`,
-              options: ["Yes", "No", "Not sure"],
-              required: true,
-              poemId,
-            },
-            {
-              id: `ai-${poemId}-why`,
-              type: "openEnded",
-              question: "What factors influenced your selection?",
-              required: true,
-              poemId,
-            },
-            {
-              id: `ai-${poemId}-confidence`,
-              type: "likertScale",
-              question: `How confident are you in this judgment for Poem ${
-                i + 1
-              }?`,
-              options: [
-                { label: "Not at all confident	", value: 1 },
-                { label: "Slightly confident", value: 2 },
-                { label: "Moderately confident", value: 3 },
-                { label: "Very confident", value: 4 },
-                { label: "Extremely confident", value: 5 },
-              ],
-              required: true,
-              poemId,
-            },
-          ];
-        });
+                return {
+                  id: poemId,
+                  title: `Poem ${i + 1}`,
+                  content: (
+                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, j) => {
+                          const isVisible = poem.text.includes(j);
+                          return (
+                            <span
+                              key={j}
+                              className={`text-sm transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
+                          </span>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  ),
+                };
+              }),
+              {
+                id: "none",
+                title: "None of the poems were created with AI",
+              },
+            ],
+          },
+          {
+            id: "ai-decision",
+            type: "openEnded",
+            question: "What factors impacted your decision?",
+            placeholder: "Type your answer here...",
+            required: true,
+          },
+        ];
 
         return {
           ...section,

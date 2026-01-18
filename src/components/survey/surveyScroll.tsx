@@ -52,6 +52,8 @@ const SurveyScroll: React.FC<Props> = ({
         return answer;
       case "dragRank":
         return Array.isArray(answer) && answer.length === q.items.length;
+      case "selectAll":
+        return Array.isArray(answer) && answer.length > 0;
       case "topXRanking":
         return (
           Array.isArray(answer) &&

@@ -7,6 +7,7 @@ import TopXRanking from "./questions/topX";
 import DragRank from "./questions/dragRank";
 import CircularMultipleChoice from "./questions/circularMultipleChoice";
 import Range from "./questions/range";
+import SelectAll from "./questions/selectAll";
 
 interface Props {
   question: Question;
@@ -49,6 +50,14 @@ const QuestionRenderer: React.FC<Props> = ({ question, value, onChange }) => {
     case "dragRank":
       return (
         <DragRank question={question} value={value || []} onChange={onChange} />
+      );
+    case "selectAll":
+      return (
+        <SelectAll
+          question={question}
+          value={value || []}
+          onChange={onChange}
+        />
       );
     default:
       return null;

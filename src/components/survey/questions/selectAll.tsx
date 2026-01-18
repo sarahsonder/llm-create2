@@ -39,13 +39,6 @@ const SelectAll: React.FC<Props> = ({ question, value = [], onChange }) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const itemById = (id: string) =>
-    question.items.find((it) => it.id === id) || {
-      id,
-      title: id,
-      content: null,
-    };
-
   return (
     <div className="mb-4 space-y-3">
       <div>
@@ -68,7 +61,7 @@ const SelectAll: React.FC<Props> = ({ question, value = [], onChange }) => {
               className="border rounded p-3 bg-white flex flex-col"
             >
               <div className="flex items-center justify-between gap-2">
-                <label className="flex items-center gap-3 cursor-pointer">
+                <label className="flex items-center gap-3 cursor-pointer accent-dark-grey">
                   <input
                     type="checkbox"
                     checked={isChecked}
