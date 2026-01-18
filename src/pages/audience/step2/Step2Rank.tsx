@@ -8,29 +8,88 @@ import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceRankingQuestions } from "../../../consts/surveyQuestions";
 import type { SurveyDefinition, Section } from "../../../types";
 
+// TODO: Remove - Hard-coded fallback data for standalone rendering/testing
+const defaultContextValue = {
+  userData: {
+    role: "audience" as const,
+    data: {
+      passage: "1",
+      timeStamps: [] as Date[],
+      poemsViewed: ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"], // fallback poem IDs for testing
+    },
+  },
+  addRoleSpecificData: (_updates: any) => {
+    console.log("[Standalone Mode] addRoleSpecificData called:", _updates);
+  },
+};
+
+// Fallback statements for standalone testing or when API fails
+const fallbackStatements = [
+  "Statement A",
+  "Statement B",
+  "Statement C",
+  "Statement D",
+];
+
 const AudienceRanking = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [artistStatements, setArtistStatements] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const context = useContext(DataContext);
 
-  if (!context) {
-    throw new Error("Component must be used within a DataContext.Provider");
-  }
-
-  const { userData, addRoleSpecificData } = context;
+  // Use context if available, otherwise fall back to hard-coded defaults
+  const { userData, addRoleSpecificData } = context ?? defaultContextValue;
 
   const passageId = (userData as any)?.data?.passage || "1";
+  // TODO: Remove hard coded values
+  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const poems = Poems;
-  const artistStatements = [
-    "Statement A",
-    "Statement B",
-    "Statement C",
-    "Statement D",
-    "Unsure",
-  ];
+
+  // Fetch artist statements on mount
+  useEffect(() => {
+    const fetchArtistStatements = async () => {
+      if (poemsViewed.length === 0) {
+        setArtistStatements(fallbackStatements);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch("/api/firebase/audience/artist-statements", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ poemIds: poemsViewed }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch artist statements");
+        }
+
+        const data = await response.json();
+        // Extract statements from the response, filter out nulls
+        const statements = data.poemStatements
+          .filter((s: { poemId: string; statement: string } | null) => s !== null)
+          .map((s: { poemId: string; statement: string }) => s.statement);
+
+        // Use fetched statements or fallback if empty
+        setArtistStatements(statements.length > 0 ? statements : fallbackStatements);
+      } catch (error) {
+        console.error("Error fetching artist statements:", error);
+        setArtistStatements(fallbackStatements);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArtistStatements();
+  }, []);
+
+  // Options for multiple choice: statements + "Unsure"
+  const statementOptions = [...artistStatements, "Unsure"];
 
   const surveyWithItems = (() => {
     const words = passage.text.split(" ");
@@ -122,7 +181,7 @@ const AudienceRanking = () => {
                   </div>
                 ),
                 question: `Poem ${i + 1}`,
-                options: artistStatements,
+                options: statementOptions,
                 required: true,
               },
               {
@@ -183,6 +242,19 @@ const AudienceRanking = () => {
     });
     navigate("/audience/ai");
   };
+
+  if (isLoading) {
+    return (
+      <PageTemplate
+        title={`Step 2: Answer some questions about the poems`}
+        description="Now that you have read all the blackout poems, please answer the following questions about them."
+      >
+        <div className="flex items-center justify-center py-16">
+          <p className="text-grey">Loading...</p>
+        </div>
+      </PageTemplate>
+    );
+  }
 
   return (
     <PageTemplate

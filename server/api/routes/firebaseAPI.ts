@@ -252,34 +252,13 @@ router.post("/audience/artist-statements", async (req, res) => {
       poemIds.map((id: string) => getArtistStatement(id))
     );
 
-    // Get all poems to find 4 random other statements
-    const allPoemsSnapshot = await db.collection(POEM_COLLECTION).get();
-    const requestedPoemIdSet = new Set(poemIds);
-
-    // Filter out the requested poems
-    const otherPoemIds = allPoemsSnapshot.docs
-      .map((doc) => doc.id)
-      .filter((id) => !requestedPoemIdSet.has(id));
-
-    // Fisher-Yates shuffle for random selection
-    for (let i = otherPoemIds.length - 1; i > 0; i--) {
+    // Fisher-Yates shuffle to randomize statement order
+    for (let i = poemStatements.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [otherPoemIds[i], otherPoemIds[j]] = [otherPoemIds[j], otherPoemIds[i]];
+      [poemStatements[i], poemStatements[j]] = [poemStatements[j], poemStatements[i]];
     }
 
-    // Get statements for 4 random other poems
-    const randomPoemIds = otherPoemIds.slice(0, 4);
-    const randomStatementsResults = await Promise.all(
-      randomPoemIds.map((id) => getArtistStatement(id))
-    );
-    const randomStatements = randomStatementsResults
-      .filter((s): s is { poemId: string; statement: string } => s !== null)
-      .map((s) => s.statement);
-
-    res.json({
-      poemStatements,
-      randomStatements,
-    });
+    res.json({ poemStatements });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to get artist statements" });
