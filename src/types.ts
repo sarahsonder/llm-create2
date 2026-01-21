@@ -77,6 +77,9 @@ export interface AudienceSurvey {
   preAnswers: SurveyAnswers;
   poemSurvey: PoemSurveyDefinition[];
   poemAnswers: PoemSurveyAnswers[];
+  rankingData: RankingData;
+  postRankSurvey: SurveyDefinition;
+  postRankAnswers: SurveyAnswers;
   postSurvey: SurveyDefinition;
   postAnswers: SurveyAnswers;
   AISurvey: SurveyDefinition;
@@ -175,6 +178,25 @@ export interface PoemSurveyDefinition extends SurveyDefinition {}
 
 export interface PoemSurveyAnswers extends SurveyAnswers {
   poemId: string;
+}
+
+// Ranking survey data structures
+export interface StatementMatch {
+  poemId: string;
+  isCorrect: boolean;
+  chosenStatement: string;
+  explanation?: string;
+}
+
+export interface PoemRankings {
+  favourite: string[]; // most liked to least liked
+  impact: string[]; // most emotionally impactful to least
+  creative: string[]; // most creative to least
+}
+
+export interface RankingData {
+  poemRankings: PoemRankings;
+  statementMatches: StatementMatch[];
 }
 
 export type AnswerValue = string | string[] | number | null;

@@ -38,6 +38,7 @@ import type {
   ArtistSurvey,
   AudienceSurvey,
   SurveyAnswers,
+  RankingData,
 } from "./types";
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
@@ -64,6 +65,7 @@ interface DataContextValue {
     answers: SurveyAnswers,
     additionalData?: Partial<Audience>
   ) => void;
+  addRankSurvey: (rankingData: RankingData) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
 }
@@ -243,6 +245,27 @@ function App() {
     });
   };
 
+  const addRankSurvey = (rankingData: RankingData) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update rank survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            rankingData,
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
   // Flush saves on tab hide/close
   useEffect(() => {
     const onVisibility = () => {
@@ -274,6 +297,7 @@ function App() {
         addPostSurvey,
         addPreSurvey,
         addPoemEvaluation,
+        addRankSurvey,
         sessionId,
         flushSaves,
       }}

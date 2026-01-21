@@ -6,22 +6,25 @@ import { Passages } from "../../../consts/passages";
 import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceRankingQuestions } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section } from "../../../types";
+import type { SurveyDefinition, Section, SurveyAnswers, RankingData, StatementMatch, PoemRankings } from "../../../types";
 
 // TODO: Remove - Hard-coded fallback data for standalone rendering/testing
-const defaultContextValue = {
-  userData: {
-    role: "audience" as const,
-    data: {
-      passage: "1",
-      timeStamps: [] as Date[],
-      poemsViewed: ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"], // fallback poem IDs for testing
-    },
-  },
-  addRoleSpecificData: (_updates: any) => {
-    console.log("[Standalone Mode] addRoleSpecificData called:", _updates);
-  },
-};
+// const defaultContextValue = {
+//   userData: {
+//     role: "audience" as const,
+//     data: {
+//       passage: "1",
+//       timeStamps: [] as Date[],
+//       poemsViewed: ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"], // fallback poem IDs for testing
+//     },
+//   },
+//   addRoleSpecificData: (_updates: any) => {
+//     console.log("[Standalone Mode] addRoleSpecificData called:", _updates);
+//   },
+//   addRankSurvey: (_rankingData: RankingData) => {
+//     console.log("[Standalone Mode] addRankSurvey called:", _rankingData);
+//   },
+// };
 
 // Fallback statements for standalone testing or when API fails
 const fallbackStatements = [
@@ -31,16 +34,23 @@ const fallbackStatements = [
   "Statement D",
 ];
 
+// Type for tracking which statement belongs to which poem
+type PoemStatementMap = Record<string, string>; // poemId -> correct statement
+
 const AudienceRanking = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [artistStatements, setArtistStatements] = useState<string[]>([]);
+  const [correctStatements, setCorrectStatements] = useState<PoemStatementMap>({}); // Maps poemId to its correct statement
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
   const context = useContext(DataContext);
 
-  // Use context if available, otherwise fall back to hard-coded defaults
-  const { userData, addRoleSpecificData } = context ?? defaultContextValue;
+  if (!context) {
+    throw new Error("Component must be used within a DataContext.Provider");
+  }
+
+  const { userData, addRoleSpecificData, addRankSurvey } = context;
 
   const passageId = (userData as any)?.data?.passage || "1";
   // TODO: Remove hard coded values
@@ -70,12 +80,20 @@ const AudienceRanking = () => {
         }
 
         const data = await response.json();
-        // Extract statements from the response, filter out nulls
-        const statements = data.poemStatements
-          .filter((s: { poemId: string; statement: string } | null) => s !== null)
-          .map((s: { poemId: string; statement: string }) => s.statement);
+        // Filter out nulls and build the correct statement mapping
+        const validStatements = data.poemStatements.filter(
+          (s: { poemId: string; statement: string } | null) => s !== null
+        ) as { poemId: string; statement: string }[];
 
-        // Use fetched statements or fallback if empty
+        // Build poemId -> statement mapping for correctness checking
+        const statementMap: PoemStatementMap = {};
+        validStatements.forEach((s) => {
+          statementMap[s.poemId] = s.statement;
+        });
+        setCorrectStatements(statementMap);
+
+        // Extract just the statement strings for display options (already shuffled by API)
+        const statements = validStatements.map((s) => s.statement);
         setArtistStatements(statements.length > 0 ? statements : fallbackStatements);
       } catch (error) {
         console.error("Error fetching artist statements:", error);
@@ -236,7 +254,54 @@ const AudienceRanking = () => {
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (answers: SurveyAnswers) => {
+    // Helper to process a dragRank answer into ordered poemIds
+    const processRanking = (questionId: string): string[] => {
+      const rankingAnswer = answers[questionId] as string[] | undefined;
+      return rankingAnswer
+        ? rankingAnswer.map((itemId) => {
+            // Extract poem index from item ID (e.g., "q1-poem-2" -> 2)
+            const match = itemId.match(/poem-(\d+)$/);
+            const index = match ? parseInt(match[1], 10) : 0;
+            return poemsViewed[index] || itemId;
+          })
+        : [];
+    };
+
+    // Process all three rankings
+    const poemRankings: PoemRankings = {
+      favourite: processRanking("q1"),
+      impact: processRanking("q2"),
+      creative: processRanking("q3"),
+    };
+
+    // Process statement matching answers
+    const statementMatches: StatementMatch[] = poems.map((_, i) => {
+      const poemId = poemsViewed[i] || `poem-${i}`;
+      const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
+      const explanation = (answers[`q4-poem-${i}-unsure`] as string) || undefined;
+      
+      // Check if the chosen statement matches the correct one for this poem
+      const correctStatement = correctStatements[poemId];
+      const isCorrect = chosenStatement !== "Unsure" && chosenStatement === correctStatement;
+      
+      return {
+        poemId,
+        isCorrect,
+        chosenStatement,
+        ...(chosenStatement === "Unsure" && explanation ? { explanation } : {}),
+      };
+    });
+
+    // Save ranking data
+    const rankingData: RankingData = {
+      poemRankings,
+      statementMatches,
+    };
+    console.log(rankingData);
+    addRankSurvey(rankingData);
+
+    // Update timestamps and navigate
     addRoleSpecificData({
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
