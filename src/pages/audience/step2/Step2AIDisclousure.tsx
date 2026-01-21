@@ -6,7 +6,24 @@ import { Passages } from "../../../consts/passages";
 import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceAIQuestionSurvey } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section } from "../../../types";
+import type { SurveyDefinition, Section, SurveyAnswers } from "../../../types";
+
+// Dummy data for standalone rendering/testing
+// const defaultContextValue = {
+//   userData: {
+//     role: "audience" as const,
+//     data: {
+//       passage: "1",
+//       timeStamps: [] as Date[],
+//     },
+//   },
+//   addRoleSpecificData: (_updates: any) => {
+//     console.log("[Standalone Mode] addRoleSpecificData called:", _updates);
+//   },
+//   addAISurvey: (_answers: SurveyAnswers) => {
+//     console.log("[Standalone Mode] addAISurvey called:", _answers);
+//   },
+// };
 
 const AudienceAI = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -18,7 +35,8 @@ const AudienceAI = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addRoleSpecificData } = context;
+  const { userData, addRoleSpecificData, addAISurvey } = context;
+  // const { userData, addRoleSpecificData, addAISurvey } = context ?? defaultContextValue;
 
   const passageId = (userData as any)?.data?.passage || "1";
 
@@ -51,7 +69,12 @@ const AudienceAI = () => {
     }
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = (answers: SurveyAnswers) => {
+    // Save AI survey answers
+    console.log(answers);
+    addAISurvey(answers);
+
+    // Update timestamps and navigate
     addRoleSpecificData({
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });

@@ -39,6 +39,7 @@ import type {
   AudienceSurvey,
   SurveyAnswers,
   RankingData,
+  ReRankingData,
 } from "./types";
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
@@ -66,6 +67,8 @@ interface DataContextValue {
     additionalData?: Partial<Audience>
   ) => void;
   addRankSurvey: (rankingData: RankingData) => void;
+  addAISurvey: (answers: SurveyAnswers) => void;
+  addReRankSurvey: (reRankingData: ReRankingData) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
 }
@@ -266,6 +269,48 @@ function App() {
     });
   };
 
+  const addAISurvey = (answers: SurveyAnswers) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update AI survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            AIAnswers: answers,
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
+  const addReRankSurvey = (reRankingData: ReRankingData) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update re-rank survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            reRankingData,
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
   // Flush saves on tab hide/close
   useEffect(() => {
     const onVisibility = () => {
@@ -298,6 +343,8 @@ function App() {
         addPreSurvey,
         addPoemEvaluation,
         addRankSurvey,
+        addAISurvey,
+        addReRankSurvey,
         sessionId,
         flushSaves,
       }}

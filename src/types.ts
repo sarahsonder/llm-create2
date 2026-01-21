@@ -78,12 +78,10 @@ export interface AudienceSurvey {
   poemSurvey: PoemSurveyDefinition[];
   poemAnswers: PoemSurveyAnswers[];
   rankingData: RankingData;
-  postRankSurvey: SurveyDefinition;
-  postRankAnswers: SurveyAnswers;
+  AIAnswers: SurveyAnswers;
+  reRankingData: ReRankingData;
   postSurvey: SurveyDefinition;
   postAnswers: SurveyAnswers;
-  AISurvey: SurveyDefinition;
-  AIAnswers: SurveyAnswers;
 }
 
 // TODO: Exact poem feedback fields tbd
@@ -197,6 +195,10 @@ export interface PoemRankings {
 export interface RankingData {
   poemRankings: PoemRankings;
   statementMatches: StatementMatch[];
+}
+
+export interface ReRankingData {
+  poemRankings: PoemRankings;
 }
 
 export type AnswerValue = string | string[] | number | null;
