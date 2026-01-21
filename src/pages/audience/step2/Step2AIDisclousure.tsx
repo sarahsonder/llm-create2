@@ -38,7 +38,7 @@ const AudienceAI = () => {
   const { userData, addRoleSpecificData, addAISurvey } = context;
   // const { userData, addRoleSpecificData, addAISurvey } = context ?? defaultContextValue;
 
-  const passageId = (userData as any)?.data?.passage || "1";
+  const passageId = (userData as any)?.data?.passageId || "1";
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const words = passage.text.split(" ");

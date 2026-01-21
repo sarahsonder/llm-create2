@@ -52,7 +52,7 @@ const AudienceRanking = () => {
 
   const { userData, addRoleSpecificData, addRankSurvey } = context;
 
-  const passageId = (userData as any)?.data?.passage || "1";
+  const passageId = (userData as any)?.data?.passageId || "1";
   // TODO: Remove hard coded values
   const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"];
 

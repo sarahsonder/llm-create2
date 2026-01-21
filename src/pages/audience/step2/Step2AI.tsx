@@ -40,7 +40,7 @@ const AudienceReRanking = () => {
   // const { userData, addRoleSpecificData, addReRankSurvey } = context ?? defaultContextValue;
 
 
-  const passageId = (userData as any)?.data?.passage || "1";
+  const passageId = (userData as any)?.data?.passageId || "1";
   const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["poem1", "poem2", "poem3", "poem4"];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];

@@ -180,11 +180,15 @@ router.post("/audience/commit-session", async (req, res) => {
       .doc(sessionId);
 
     // Main audience document with references and metadata
+    const existingTimestamps = (audienceData.timeStamps ?? []).map(
+      (ts: string | Date) => new Date(ts)
+    );
     const audience = {
       passageId: audienceData.passageId,
       poemsViewed: audienceData.poemsViewed ?? [],
       surveyResponse: surveyRef,
-      timestamps: [...(audienceData.timeStamps ?? []), new Date()],
+      timestamps: [...existingTimestamps, new Date()],
+
     };
 
     // Survey document with all survey responses
