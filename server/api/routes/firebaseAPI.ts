@@ -179,13 +179,27 @@ router.post("/audience/commit-session", async (req, res) => {
       .collection(AUDIENCE_INCOMPLETE_SESSION_COLLECTION)
       .doc(sessionId);
 
+    // Main audience document with references and metadata
     const audience = {
+      passageId: audienceData.passageId,
+      poemsViewed: audienceData.poemsViewed ?? [],
       surveyResponse: surveyRef,
       timestamps: [...(audienceData.timeStamps ?? []), new Date()],
     };
 
+    // Survey document with all survey responses
+    const survey = {
+      audienceId: audienceRef.id,
+      preAnswers: surveyData.preAnswers ?? {},
+      poemAnswers: surveyData.poemAnswers ?? [],
+      rankingData: surveyData.rankingData ?? {},
+      AIAnswers: surveyData.AIAnswers ?? {},
+      reRankingData: surveyData.reRankingData ?? {},
+      postAnswers: surveyData.postAnswers ?? {},
+    };
+
     batch.set(audienceRef, audience);
-    batch.set(surveyRef, { audienceId: audienceRef.id, ...surveyData });
+    batch.set(surveyRef, survey);
     batch.delete(incompleteRef);
 
     await batch.commit();
