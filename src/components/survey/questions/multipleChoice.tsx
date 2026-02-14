@@ -52,7 +52,7 @@ export default MultipleChoice;
 const CollapsibleChildren: React.FC<{ childrenNode: React.ReactNode }> = ({
   childrenNode,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   return (
     <div className="mb-2 w-full">
