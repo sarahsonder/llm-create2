@@ -37,6 +37,9 @@ import type {
   Audience,
   ArtistSurvey,
   AudienceSurvey,
+  SurveyAnswers,
+  RankingData,
+  ReRankingData,
 } from "./types";
 import { Provider } from "./components/ui/provider";
 import { Toaster } from "./components/ui/toaster";
@@ -58,6 +61,14 @@ interface DataContextValue {
   addPostSurvey: (
     updates: Partial<ArtistSurvey> | Partial<AudienceSurvey>
   ) => void;
+  addPoemEvaluation: (
+    poemId: string,
+    answers: SurveyAnswers,
+    additionalData?: Partial<Audience>
+  ) => void;
+  addRankSurvey: (rankingData: RankingData) => void;
+  addAISurvey: (answers: SurveyAnswers) => void;
+  addReRankSurvey: (reRankingData: ReRankingData) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
 }
@@ -86,16 +97,24 @@ function App() {
     setSessionId(id);
   }, []);
 
-  const enqueueAutosave = (data: UserData | null) => {
+  const autoSave = (data: UserData | null) => {
     if (!data || !sessionId) return;
 
     if (saveTimerRef.current) window.clearTimeout(saveTimerRef.current);
     saveTimerRef.current = window.setTimeout(async () => {
-      await fetch("/api/firebase/autosave", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId, data }),
-      });
+      if (data.role === "artist") {
+        await fetch("/api/firebase/artist/autosave", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, data }),
+        });
+      } else {
+        await fetch("/api/firebase/audience/autosave", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId, data }),
+        });
+      }
     }, 500);
   };
 
@@ -133,7 +152,7 @@ function App() {
           ...updates,
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
       return next;
     });
   };
@@ -163,7 +182,7 @@ function App() {
           },
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
       return next;
     });
   };
@@ -193,7 +212,101 @@ function App() {
           },
         },
       };
-      enqueueAutosave(next as UserData);
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
+  const addPoemEvaluation = (
+    poemId: string,
+    answers: SurveyAnswers,
+    additionalData?: Partial<Audience>
+  ) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error(
+          "Tried to update poem evaluation when userData is null."
+        );
+      }
+
+      const poemAnswer = { poemId, ...answers };
+      const existingPoemAnswers = prev.data.surveyResponse?.poemAnswers ?? [];
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          ...additionalData,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            poemAnswers: [...existingPoemAnswers, poemAnswer],
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
+  const addRankSurvey = (rankingData: RankingData) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update rank survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            rankingData,
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
+  const addAISurvey = (answers: SurveyAnswers) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update AI survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            AIAnswers: answers,
+          },
+        },
+      };
+      autoSave(next as UserData);
+      return next;
+    });
+  };
+
+  const addReRankSurvey = (reRankingData: ReRankingData) => {
+    setUserData((prev: any) => {
+      if (!prev || !prev.data) {
+        throw new Error("Tried to update re-rank survey when userData is null.");
+      }
+
+      const next = {
+        ...prev,
+        data: {
+          ...prev.data,
+          surveyResponse: {
+            ...prev.data.surveyResponse,
+            reRankingData,
+          },
+        },
+      };
+      autoSave(next as UserData);
       return next;
     });
   };
@@ -228,6 +341,10 @@ function App() {
         addRoleSpecificData,
         addPostSurvey,
         addPreSurvey,
+        addPoemEvaluation,
+        addRankSurvey,
+        addAISurvey,
+        addReRankSurvey,
         sessionId,
         flushSaves,
       }}

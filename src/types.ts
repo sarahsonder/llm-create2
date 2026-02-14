@@ -16,17 +16,6 @@ export interface ArtistSurvey {
   postAnswers: SurveyAnswers;
 }
 
-export interface AudiencePoem {
-  id: string;
-  poemId: string;
-}
-
-// export interface SurveyQuestion {
-//   id: string;
-//   q: string;
-//   answerType:
-// }
-
 export interface Poem {
   passageId: string; // passageId in Passage.id
   passage: Passage;
@@ -77,7 +66,7 @@ export type Role = (typeof Role)[keyof typeof Role];
 export interface Audience {
   passageId: string;
   surveyResponse: AudienceSurvey;
-  poemsViewed: AudiencePoem[];
+  poemsViewed: string[];
   timeStamps: Date[];
 }
 
@@ -88,10 +77,11 @@ export interface AudienceSurvey {
   preAnswers: SurveyAnswers;
   poemSurvey: PoemSurveyDefinition[];
   poemAnswers: PoemSurveyAnswers[];
+  rankingData: RankingData;
+  AIAnswers: SurveyAnswers;
+  reRankingData: ReRankingData;
   postSurvey: SurveyDefinition;
   postAnswers: SurveyAnswers;
-  AISurvey: SurveyDefinition;
-  AIAnswers: SurveyAnswers;
 }
 
 // TODO: Exact poem feedback fields tbd
@@ -105,13 +95,6 @@ export interface Passage {
   id: string;
   text: string;
 }
-
-// export const AudienceCondition = {
-//   NO_KNOWLEDGE: "NO_KNOWLEDGE",
-//   FULL_TRANSPARENCY: "FULL_TRANSPARENCY",
-// } as const;
-// export type AudienceCondition =
-//   (typeof AudienceCondition)[keyof typeof AudienceCondition];
 
 export type QuestionType =
   | "multipleChoice"
@@ -193,6 +176,29 @@ export interface PoemSurveyDefinition extends SurveyDefinition {}
 
 export interface PoemSurveyAnswers extends SurveyAnswers {
   poemId: string;
+}
+
+// Ranking survey data structures
+export interface StatementMatch {
+  poemId: string;
+  isCorrect: boolean;
+  chosenStatement: string;
+  explanation?: string;
+}
+
+export interface PoemRankings {
+  favourite: string[]; // most liked to least liked
+  impact: string[]; // most emotionally impactful to least
+  creative: string[]; // most creative to least
+}
+
+export interface RankingData {
+  poemRankings: PoemRankings;
+  statementMatches: StatementMatch[];
+}
+
+export interface ReRankingData {
+  poemRankings: PoemRankings;
 }
 
 export type AnswerValue = string | string[] | number | null;
