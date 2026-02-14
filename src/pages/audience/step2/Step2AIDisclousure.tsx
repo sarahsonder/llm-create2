@@ -47,7 +47,7 @@ const AudienceAI = () => {
 
   useEffect(() => {
     const container = document.querySelector(
-      ".overflow-y-auto"
+      ".overflow-y-auto",
     ) as HTMLElement | null;
     const onScroll = () => {
       if (container) {
@@ -93,6 +93,7 @@ const AudienceAI = () => {
             question:
               "Which poems do you believe were created with AI assistance?",
             required: true,
+            defaultExpanded: ["poem-0", "poem-1", "poem-2", "poem-3"],
             items: [
               ...poems.map((poem, i) => {
                 const poemId = `poem-${i}`;
@@ -188,7 +189,7 @@ const AudienceAI = () => {
         <button
           onClick={() => {
             const container = document.querySelector(
-              ".overflow-y-auto"
+              ".overflow-y-auto",
             ) as HTMLElement | null;
             if (container) {
               container.scrollTo({ top: 0, behavior: "smooth" });
