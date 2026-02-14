@@ -6,7 +6,13 @@ import { Passages } from "../../../consts/passages";
 import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceReRankingQuestions } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section, SurveyAnswers, PoemRankings, ReRankingData } from "../../../types";
+import type {
+  SurveyDefinition,
+  Section,
+  SurveyAnswers,
+  PoemRankings,
+  ReRankingData,
+} from "../../../types";
 
 // Dummy data for standalone rendering/testing
 // const defaultContextValue = {
@@ -39,9 +45,13 @@ const AudienceReRanking = () => {
   const { userData, addRoleSpecificData, addReRankSurvey } = context;
   // const { userData, addRoleSpecificData, addReRankSurvey } = context ?? defaultContextValue;
 
-
   const passageId = (userData as any)?.data?.passageId || "1";
-  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["poem1", "poem2", "poem3", "poem4"];
+  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || [
+    "poem1",
+    "poem2",
+    "poem3",
+    "poem4",
+  ];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const poems = Poems;
@@ -115,7 +125,7 @@ const AudienceReRanking = () => {
 
   useEffect(() => {
     const container = document.querySelector(
-      ".overflow-y-auto"
+      ".overflow-y-auto",
     ) as HTMLElement | null;
     const onScroll = () => {
       if (container) {
@@ -175,7 +185,7 @@ const AudienceReRanking = () => {
   return (
     <PageTemplate
       title={`Step 2: Re-rank the poems`}
-      description="Below, we have indicated  which poem(s) were created with AI assistance. If you would like to re-rank your poems please do so."
+      description="Knowing some of these poems may have been made with AI assistance, if you would like to re-rank your poems please do so."
     >
       <div></div>
 
@@ -202,7 +212,7 @@ const AudienceReRanking = () => {
         <button
           onClick={() => {
             const container = document.querySelector(
-              ".overflow-y-auto"
+              ".overflow-y-auto",
             ) as HTMLElement | null;
             if (container) {
               container.scrollTo({ top: 0, behavior: "smooth" });
