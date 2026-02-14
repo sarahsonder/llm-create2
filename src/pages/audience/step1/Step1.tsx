@@ -14,12 +14,13 @@ const AudiencePassage = () => {
 
   const { userData, addRoleSpecificData } = context;
 
-  const passageId = (userData as any)?.data?.passage || "1";
+  const passageId = (userData as any)?.data?.passageId || "1";
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
 
   const handleSubmit = () => {
     addRoleSpecificData({
+      passageId: passageId,
       timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
     });
     navigate("/audience/poems");
@@ -34,7 +35,7 @@ const AudiencePassage = () => {
       afterDuration={handleSubmit}
       buttonText="Begin Reading Poems"
     >
-      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
+      <div className="w-[400px] md:w-[500px] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
         <p
           className="text-main text-justify text-sm md:text-base select-none"
           onCopy={(e) => e.preventDefault()}

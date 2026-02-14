@@ -851,3 +851,143 @@ export const AudiencePoemQuestions: PoemSurveyDefinition = {
     },
   ],
 };
+
+export const AudienceRankingQuestions: SurveyDefinition = {
+  id: "survey2",
+  title: "Audience Ranking Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "Poem Ranking",
+      questions: [
+        {
+          id: "q1",
+          type: "dragRank",
+          question:
+            "Here are the same four blackout poems created from the same passage. Please review them and rank the four poems from most liked (1) to least liked (4).",
+          items: [],
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "dragRank",
+          question:
+            "Now, reflect on your experience while reading the poems. Below are four blackout poems created from the same passage. Please review them and rank the poems from most emotionally impactful (1) to least emotionally impactful (4).",
+          items: [],
+          required: true,
+        },
+        {
+          id: "q3",
+          type: "dragRank",
+          question:
+            "Based on the definition of creativity as work that is created as new with emotional content or meaning, please review the four blackout poems below and rank them from most creative (1) to least creative (4).",
+          items: [],
+          required: true,
+        },
+      ],
+    },
+    {
+      id: "section2",
+      title: "Meaning",
+      description:
+        "Each poet provided an artist’s statement describing their poem. For each poem, select the statement you believe was written by its artist. If unsure, please explain your reasoning in the text box provided.",
+      questions: [
+        {
+          id: "q4",
+          type: "multipleChoice",
+          question: "",
+          options: [],
+          required: true,
+        },
+      ],
+    },
+  ],
+};
+
+export const AudienceAIQuestionSurvey: SurveyDefinition = {
+  id: "survey2",
+  title: "Audience AI Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "AI Section",
+      questions: [],
+    },
+  ],
+};
+
+export const AudiencePostSurveyQuestions: SurveyDefinition = {
+  id: "survey3",
+  title: "Audience Post-Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "Opinion on AI in Creative Spaces",
+      questions: [
+        {
+          id: "q1",
+          type: "multipleChoice",
+          question:
+            "Increased use of AI computer programs in creative tasks makes you feel",
+          options: [
+            "Equally concerned and excited",
+            "More concerned than excited",
+            "More excited than concerned",
+          ],
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "openEnded",
+          question: "How do you feel about the use of AI in creative work?",
+          placeholder: "Type your answer here...",
+          required: true,
+        },
+        {
+          id: "q3",
+          type: "openEnded",
+          question: "Is there anything else you would like to share with us?",
+          placeholder: "Type your answer here...",
+          required: false,
+        },
+      ],
+    },
+  ],
+};
+
+export const AudienceReRankingQuestions: SurveyDefinition = {
+  id: "survey2",
+  title: "Audience Ranking Survey",
+  sections: [
+    {
+      id: "section1",
+      title: "Poem Ranking",
+      questions: [
+        {
+          id: "q1",
+          type: "dragRank",
+          question:
+            "Here are the same four blackout poems created from the same passage. Please review them and rank the four poems from most liked (1) to least liked (4).",
+          items: [],
+          required: true,
+        },
+        {
+          id: "q2",
+          type: "dragRank",
+          question:
+            "Now, reflect on your experience while reading the poems. Below are four blackout poems created from the same passage. Please review them and rank the poems from most emotionally impactful (1) to least emotionally impactful (4).",
+          items: [],
+          required: true,
+        },
+        {
+          id: "q3",
+          type: "dragRank",
+          question:
+            "Based on the definition of creativity as work that is created as new with emotional content or meaning, please review the four blackout poems below and rank them from most creative (1) to least creative (4).",
+          items: [],
+          required: true,
+        },
+      ],
+    },
+  ],
+};
