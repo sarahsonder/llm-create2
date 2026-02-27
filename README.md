@@ -1,4 +1,4 @@
-# LLM Create Part 2
+# LLM Create Part 2 (Audience)
 ## Lost in Translation: Exploring the Impact of LLMs on the Human Creative Process
 
 <img width="2438" height="619" alt="Artist and Audience" src="https://github.com/user-attachments/assets/3d50953e-5e37-4efc-9183-20527226399b" />
