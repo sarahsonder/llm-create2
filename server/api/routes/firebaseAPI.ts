@@ -96,7 +96,11 @@ router.post("/artist/commit-session", async (req, res) => {
 
     batch.set(artistRef, artist);
     batch.set(surveyRef, { artistId: artistRef.id, ...surveyData });
-    batch.set(poemRef, { artistId: artistRef.id, ...poemData, random: Math.random() });
+    batch.set(poemRef, {
+      artistId: artistRef.id,
+      ...poemData,
+      random: Math.random(),
+    });
     batch.delete(incompleteRef);
 
     await batch.commit();
@@ -181,14 +185,13 @@ router.post("/audience/commit-session", async (req, res) => {
 
     // Main audience document with references and metadata
     const existingTimestamps = (audienceData.timeStamps ?? []).map(
-      (ts: string | Date) => new Date(ts)
+      (ts: string | Date) => new Date(ts),
     );
     const audience = {
       passageId: audienceData.passageId,
       poemsViewed: audienceData.poemsViewed ?? [],
       surveyResponse: surveyRef,
       timestamps: [...existingTimestamps, new Date()],
-
     };
 
     // Survey document with all survey responses
@@ -253,7 +256,7 @@ router.get("/audience/poems", async (req, res) => {
 
     if (poemDocs.length < POEM_LIMIT) {
       console.warn(
-        `[audience/poems] Only ${poemDocs.length} poems found for passageId: ${passageId}`
+        `[audience/poems] Only ${poemDocs.length} poems found for passageId: ${passageId}`,
       );
     }
 
@@ -267,7 +270,7 @@ router.get("/audience/poems", async (req, res) => {
         const data = doc.data();
         const artistId = data.artistId;
 
-        let statement: string | null = null;
+        let statement: string = "";
         if (artistId) {
           const surveySnapshot = await db
             .collection(ARTIST_SURVEY_COLLECTION)
@@ -276,7 +279,7 @@ router.get("/audience/poems", async (req, res) => {
             .get();
 
           statement =
-            surveySnapshot.docs[0]?.data()?.postSurveyAnswers?.q14 ?? null;
+            surveySnapshot.docs[0]?.data()?.postSurveyAnswers?.q14 ?? "";
         }
 
         return {
@@ -284,7 +287,7 @@ router.get("/audience/poems", async (req, res) => {
           text: data.text as number[],
           statement,
         };
-      })
+      }),
     );
 
     res.json({ poems });

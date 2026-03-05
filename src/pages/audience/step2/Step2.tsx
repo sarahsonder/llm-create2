@@ -13,6 +13,7 @@ import type { SurveyAnswers } from "../../../types";
 interface FetchedPoem {
   poemId: string;
   text: number[];
+  statement: string;
 }
 
 const AudiencePoems = () => {
@@ -48,8 +49,8 @@ const AudiencePoems = () => {
         setIsLoading(true);
         const response = await fetch(
           `/api/firebase/audience/poems?passageId=${encodeURIComponent(
-            passageId
-          )}`
+            passageId,
+          )}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch poems");
@@ -59,7 +60,7 @@ const AudiencePoems = () => {
 
         // Save the poem IDs to user data
         const poemIds = data.poems.map((p: FetchedPoem) => p.poemId);
-        addRoleSpecificData({ poemsViewed: poemIds });
+        addRoleSpecificData({ poemsViewed: poemIds, poemData: data.poems });
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load poems");
       } finally {
@@ -72,7 +73,7 @@ const AudiencePoems = () => {
 
   useEffect(() => {
     const container = document.querySelector(
-      ".overflow-y-auto"
+      ".overflow-y-auto",
     ) as HTMLElement | null;
     const onScroll = () => {
       if (container) {
@@ -102,7 +103,7 @@ const AudiencePoems = () => {
     if (currPoem < poems.length - 1) {
       setCurrPoem(currPoem + 1);
       const container = document.querySelector(
-        ".overflow-y-auto"
+        ".overflow-y-auto",
       ) as HTMLElement | null;
       if (container) {
         container.scrollTo({ top: 0, behavior: "smooth" });
@@ -198,7 +199,7 @@ const AudiencePoems = () => {
         <button
           onClick={() => {
             const container = document.querySelector(
-              ".overflow-y-auto"
+              ".overflow-y-auto",
             ) as HTMLElement | null;
             if (container) {
               container.scrollTo({ top: 0, behavior: "smooth" });
