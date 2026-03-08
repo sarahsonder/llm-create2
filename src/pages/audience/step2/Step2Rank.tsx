@@ -6,7 +6,14 @@ import { Passages } from "../../../consts/passages";
 import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceRankingQuestions } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section, SurveyAnswers, RankingData, StatementMatch, PoemRankings } from "../../../types";
+import type {
+  SurveyDefinition,
+  Section,
+  SurveyAnswers,
+  RankingData,
+  StatementMatch,
+  PoemRankings,
+} from "../../../types";
 
 // TODO: Remove - Hard-coded fallback data for standalone rendering/testing
 // const defaultContextValue = {
@@ -40,7 +47,9 @@ type PoemStatementMap = Record<string, string>; // poemId -> correct statement
 const AudienceRanking = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [artistStatements, setArtistStatements] = useState<string[]>([]);
-  const [correctStatements, setCorrectStatements] = useState<PoemStatementMap>({}); // Maps poemId to its correct statement
+  const [correctStatements, setCorrectStatements] = useState<PoemStatementMap>(
+    {},
+  ); // Maps poemId to its correct statement
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -53,57 +62,42 @@ const AudienceRanking = () => {
   const { userData, addRoleSpecificData, addRankSurvey } = context;
 
   const passageId = (userData as any)?.data?.passageId || "1";
-  // TODO: Remove hard coded values
-  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"];
+  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed;
+  const poemData = (userData as any)?.data?.poemData || [];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const poems = Poems;
 
-  // Fetch artist statements on mount
   useEffect(() => {
-    const fetchArtistStatements = async () => {
-      if (poemsViewed.length === 0) {
-        setArtistStatements(fallbackStatements);
-        setIsLoading(false);
-        return;
+    if (poemData.length === 0) {
+      setArtistStatements(fallbackStatements);
+      setIsLoading(false);
+      return;
+    }
+
+    // Build poemId -> statement mapping from persisted data
+    const statementMap: PoemStatementMap = {};
+    const statements: string[] = [];
+
+    poemData.forEach((p: { poemId: string; statement: string | null }) => {
+      if (p.statement) {
+        statementMap[p.poemId] = p.statement;
+        statements.push(p.statement);
       }
+    });
 
-      try {
-        const response = await fetch("/api/firebase/audience/artist-statements", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ poemIds: poemsViewed }),
-        });
+    setCorrectStatements(statementMap);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch artist statements");
-        }
+    // Shuffle statements for display
+    for (let i = statements.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [statements[i], statements[j]] = [statements[j], statements[i]];
+    }
 
-        const data = await response.json();
-        // Filter out nulls and build the correct statement mapping
-        const validStatements = data.poemStatements.filter(
-          (s: { poemId: string; statement: string } | null) => s !== null
-        ) as { poemId: string; statement: string }[];
-
-        // Build poemId -> statement mapping for correctness checking
-        const statementMap: PoemStatementMap = {};
-        validStatements.forEach((s) => {
-          statementMap[s.poemId] = s.statement;
-        });
-        setCorrectStatements(statementMap);
-
-        // Extract just the statement strings for display options (already shuffled by API)
-        const statements = validStatements.map((s) => s.statement);
-        setArtistStatements(statements.length > 0 ? statements : fallbackStatements);
-      } catch (error) {
-        console.error("Error fetching artist statements:", error);
-        setArtistStatements(fallbackStatements);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchArtistStatements();
+    setArtistStatements(
+      statements.length > 0 ? statements : fallbackStatements,
+    );
+    setIsLoading(false);
   }, []);
 
   // Options for multiple choice: statements + "Unsure"
@@ -232,7 +226,7 @@ const AudienceRanking = () => {
 
   useEffect(() => {
     const container = document.querySelector(
-      ".overflow-y-auto"
+      ".overflow-y-auto",
     ) as HTMLElement | null;
     const onScroll = () => {
       if (container) {
@@ -279,12 +273,14 @@ const AudienceRanking = () => {
     const statementMatches: StatementMatch[] = poems.map((_, i) => {
       const poemId = poemsViewed[i] || `poem-${i}`;
       const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
-      const explanation = (answers[`q4-poem-${i}-unsure`] as string) || undefined;
-      
+      const explanation =
+        (answers[`q4-poem-${i}-unsure`] as string) || undefined;
+
       // Check if the chosen statement matches the correct one for this poem
       const correctStatement = correctStatements[poemId];
-      const isCorrect = chosenStatement !== "Unsure" && chosenStatement === correctStatement;
-      
+      const isCorrect =
+        chosenStatement !== "Unsure" && chosenStatement === correctStatement;
+
       return {
         poemId,
         isCorrect,
@@ -350,7 +346,7 @@ const AudienceRanking = () => {
         <button
           onClick={() => {
             const container = document.querySelector(
-              ".overflow-y-auto"
+              ".overflow-y-auto",
             ) as HTMLElement | null;
             if (container) {
               container.scrollTo({ top: 0, behavior: "smooth" });
