@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../App";
 import { Passages } from "../../../consts/passages";
-import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceAIQuestionSurvey } from "../../../consts/surveyQuestions";
 import type { SurveyDefinition, Section, SurveyAnswers } from "../../../types";
@@ -39,11 +38,10 @@ const AudienceAI = () => {
   // const { userData, addRoleSpecificData, addAISurvey } = context ?? defaultContextValue;
 
   const passageId = (userData as any)?.data?.passageId || "1";
+  const poemData = (userData as any)?.data?.poemData || [];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
   const words = passage.text.split(" ");
-
-  const poems = Poems;
 
   useEffect(() => {
     const container = document.querySelector(
@@ -95,7 +93,7 @@ const AudienceAI = () => {
             required: true,
             defaultExpanded: ["poem-0", "poem-1", "poem-2", "poem-3"],
             items: [
-              ...poems.map((poem, i) => {
+              ...poemData.map((poem: { text: number[] }, i: number) => {
                 const poemId = `poem-${i}`;
 
                 return {

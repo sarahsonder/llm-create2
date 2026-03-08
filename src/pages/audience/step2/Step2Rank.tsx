@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../App";
 import { Passages } from "../../../consts/passages";
-import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceRankingQuestions } from "../../../consts/surveyQuestions";
 import type {
@@ -66,7 +65,6 @@ const AudienceRanking = () => {
   const poemData = (userData as any)?.data?.poemData || [];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
-  const poems = Poems;
 
   useEffect(() => {
     if (poemData.length === 0) {
@@ -116,39 +114,41 @@ const AudienceRanking = () => {
             questions: section.questions.map((q) => {
               if (q.type !== "dragRank") return q;
 
-              const items = poems.map((poem, i) => ({
-                id: `${q.id}-poem-${i}`,
-                title: `Poem ${i + 1}`,
-                content: (
-                  <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                    <div className="leading-none text-justify select-none h-max">
-                      {words.map((word, i) => {
-                        const isVisible = poem.text.includes(i);
-                        return (
-                          <span
-                            key={i}
-                            className={`text-sm transition duration-300 ${
-                              isVisible
-                                ? "text-black bg-white"
-                                : "text-transparent bg-dark-grey"
-                            }`}
-                          >
-                            {word + " "}
+              const items = poemData.map(
+                (poem: { text: number[] }, i: number) => ({
+                  id: `${q.id}-poem-${i}`,
+                  title: `Poem ${i + 1}`,
+                  content: (
+                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, i) => {
+                          const isVisible = poem.text.includes(i);
+                          return (
+                            <span
+                              key={i}
+                              className={`text-sm transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
                           </span>
-                        );
-                      })}
-                      <p className="text-xs text-grey text-left pt-2">
-                        <span className="italic">
-                          {'"' + passage.title + '"'}
-                        </span>
-                        <span>
-                          {", " + passage.author + " from The New York Times"}
-                        </span>
-                      </p>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ),
-              }));
+                  ),
+                }),
+              );
 
               return { ...q, items };
             }),
@@ -159,52 +159,54 @@ const AudienceRanking = () => {
         if (section.id === "section2") {
           return {
             ...section,
-            questions: poems.flatMap((poem, i) => [
-              {
-                id: `q4-poem-${i}`,
-                type: "multipleChoice",
-                children: (
-                  <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                    <div className="leading-none text-justify select-none h-max">
-                      {words.map((word, i) => {
-                        const isVisible = poem.text.includes(i);
-                        return (
-                          <span
-                            key={i}
-                            className={`text-sm transition duration-300 ${
-                              isVisible
-                                ? "text-black bg-white"
-                                : "text-transparent bg-dark-grey"
-                            }`}
-                          >
-                            {word + " "}
+            questions: poemData.flatMap(
+              (poem: { text: number[] }, i: number) => [
+                {
+                  id: `q4-poem-${i}`,
+                  type: "multipleChoice",
+                  children: (
+                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, i) => {
+                          const isVisible = poem.text.includes(i);
+                          return (
+                            <span
+                              key={i}
+                              className={`text-sm transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
                           </span>
-                        );
-                      })}
-                      <p className="text-xs text-grey text-left pt-2">
-                        <span className="italic">
-                          {'"' + passage.title + '"'}
-                        </span>
-                        <span>
-                          {", " + passage.author + " from The New York Times"}
-                        </span>
-                      </p>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ),
-                question: `Poem ${i + 1}`,
-                options: statementOptions,
-                required: true,
-              },
-              {
-                id: `q4-poem-${i}-unsure`,
-                type: "openEnded",
-                question:
-                  "If you selected 'Unsure', please explain why (optional)",
-                required: false,
-                poemId: `poem-${i}`,
-              },
-            ]),
+                  ),
+                  question: `Poem ${i + 1}`,
+                  options: statementOptions,
+                  required: true,
+                },
+                {
+                  id: `q4-poem-${i}-unsure`,
+                  type: "openEnded",
+                  question:
+                    "If you selected 'Unsure', please explain why (optional)",
+                  required: false,
+                  poemId: `poem-${i}`,
+                },
+              ],
+            ),
           };
         }
 
@@ -270,24 +272,28 @@ const AudienceRanking = () => {
     };
 
     // Process statement matching answers
-    const statementMatches: StatementMatch[] = poems.map((_, i) => {
-      const poemId = poemsViewed[i] || `poem-${i}`;
-      const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
-      const explanation =
-        (answers[`q4-poem-${i}-unsure`] as string) || undefined;
+    const statementMatches: StatementMatch[] = poemData.map(
+      (_: unknown, i: number) => {
+        const poemId = poemsViewed[i] || `poem-${i}`;
+        const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
+        const explanation =
+          (answers[`q4-poem-${i}-unsure`] as string) || undefined;
 
-      // Check if the chosen statement matches the correct one for this poem
-      const correctStatement = correctStatements[poemId];
-      const isCorrect =
-        chosenStatement !== "Unsure" && chosenStatement === correctStatement;
+        // Check if the chosen statement matches the correct one for this poem
+        const correctStatement = correctStatements[poemId];
+        const isCorrect =
+          chosenStatement !== "Unsure" && chosenStatement === correctStatement;
 
-      return {
-        poemId,
-        isCorrect,
-        chosenStatement,
-        ...(chosenStatement === "Unsure" && explanation ? { explanation } : {}),
-      };
-    });
+        return {
+          poemId,
+          isCorrect,
+          chosenStatement,
+          ...(chosenStatement === "Unsure" && explanation
+            ? { explanation }
+            : {}),
+        };
+      },
+    );
 
     // Save ranking data
     const rankingData: RankingData = {
