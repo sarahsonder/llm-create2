@@ -96,7 +96,11 @@ router.post("/artist/commit-session", async (req, res) => {
 
     batch.set(artistRef, artist);
     batch.set(surveyRef, { artistId: artistRef.id, ...surveyData });
-    batch.set(poemRef, { artistId: artistRef.id, ...poemData });
+    batch.set(poemRef, {
+      artistId: artistRef.id,
+      ...poemData,
+      random: Math.random(),
+    });
     batch.delete(incompleteRef);
 
     await batch.commit();
@@ -181,14 +185,13 @@ router.post("/audience/commit-session", async (req, res) => {
 
     // Main audience document with references and metadata
     const existingTimestamps = (audienceData.timeStamps ?? []).map(
-      (ts: string | Date) => new Date(ts)
+      (ts: string | Date) => new Date(ts),
     );
     const audience = {
       passageId: audienceData.passageId,
       poemsViewed: audienceData.poemsViewed ?? [],
       surveyResponse: surveyRef,
       timestamps: [...existingTimestamps, new Date()],
-
     };
 
     // Survey document with all survey responses
@@ -223,90 +226,75 @@ router.get("/audience/poems", async (req, res) => {
       return res.status(400).json({ error: "Missing or invalid passageId" });
     }
 
-    // query all poems with the given passageId
-    const snapshot = await db
+    const rand = Math.random();
+    const POEM_LIMIT = 4;
+
+    // First query: random >= rand
+    const firstSnapshot = await db
       .collection(POEM_COLLECTION)
       .where("passageId", "==", passageId)
+      .where("random", ">=", rand)
+      .orderBy("random")
+      .limit(POEM_LIMIT)
       .get();
 
-    if (snapshot.empty) {
+    let poemDocs = firstSnapshot.docs;
+
+    // Fallback query if fewer than 4 results
+    if (poemDocs.length < POEM_LIMIT) {
+      const remaining = POEM_LIMIT - poemDocs.length;
+      const fallbackSnapshot = await db
+        .collection(POEM_COLLECTION)
+        .where("passageId", "==", passageId)
+        .where("random", "<", rand)
+        .orderBy("random")
+        .limit(remaining)
+        .get();
+
+      poemDocs = [...poemDocs, ...fallbackSnapshot.docs];
+    }
+
+    if (poemDocs.length < POEM_LIMIT) {
+      console.warn(
+        `[audience/poems] Only ${poemDocs.length} poems found for passageId: ${passageId}`,
+      );
+    }
+
+    if (poemDocs.length === 0) {
       return res.status(404).json({ error: "No poems found for this passage" });
     }
 
-    // map to { poemId, text } format
-    const allPoems = snapshot.docs.map((doc) => ({
-      poemId: doc.id,
-      text: doc.data().text as number[],
-    }));
+    // Fetch artist statements for each poem
+    const poems = await Promise.all(
+      poemDocs.map(async (doc) => {
+        const data = doc.data();
+        const artistId = data.artistId;
 
-    // Fisher-Yates shuffle for true randomness
-    for (let i = allPoems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [allPoems[i], allPoems[j]] = [allPoems[j], allPoems[i]];
-    }
+        let statement: string = "";
+        if (artistId) {
+          const surveySnapshot = await db
+            .collection(ARTIST_SURVEY_COLLECTION)
+            .where("artistId", "==", artistId)
+            .limit(1)
+            .get();
 
-    // Take first 4 (or fewer if not enough poems exist)
-    const randomPoems = allPoems.slice(0, 4);
+          statement =
+            surveySnapshot.docs[0]?.data()?.postSurveyAnswers?.q14 ?? "";
+        }
 
-    res.json({ poems: randomPoems });
+        return {
+          poemId: doc.id,
+          text: data.text as number[],
+          statement,
+        };
+      }),
+    );
+
+    res.json({ poems });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to get poems" });
   }
 });
-
-router.post("/audience/artist-statements", async (req, res) => {
-  try {
-    const { poemIds } = req.body;
-
-    if (!poemIds || !Array.isArray(poemIds) || poemIds.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Missing or invalid poemIds array" });
-    }
-
-    // Get statements for the requested poem IDs
-    const poemStatements = await Promise.all(
-      poemIds.map((id: string) => getArtistStatement(id))
-    );
-
-    // Fisher-Yates shuffle to randomize statement order
-    for (let i = poemStatements.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [poemStatements[i], poemStatements[j]] = [poemStatements[j], poemStatements[i]];
-    }
-
-    res.json({ poemStatements });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to get artist statements" });
-  }
-});
-
-const getArtistStatement = async (
-  poemId: string
-): Promise<{ poemId: string; statement: string } | null> => {
-  // 1. get artistId from poemId
-  const poemDoc = await db.collection(POEM_COLLECTION).doc(poemId).get();
-  if (!poemDoc.exists) return null;
-
-  const artistId = poemDoc.data()?.artistId;
-  if (!artistId) return null;
-
-  // 2. query survey collection for matching artistId
-  const surveySnapshot = await db
-    .collection(ARTIST_SURVEY_COLLECTION)
-    .where("artistId", "==", artistId)
-    .limit(1)
-    .get();
-
-  if (surveySnapshot.empty) return null;
-
-  // 3. extract q14 from postAnswers
-  const statement = surveySnapshot.docs[0].data()?.postSurveyAnswers.q14;
-  if (!statement) return null;
-
-  return { poemId, statement };
-};
 
 export default router;
