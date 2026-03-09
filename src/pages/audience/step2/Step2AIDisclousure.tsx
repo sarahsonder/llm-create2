@@ -91,45 +91,49 @@ const AudienceAI = () => {
             question:
               "Which poems do you believe were created with AI assistance?",
             required: true,
-            defaultExpanded: ["poem-0", "poem-1", "poem-2", "poem-3"],
+            defaultExpanded: poemData.map(
+              (poem: { poemId: string }) => poem.poemId,
+            ),
             items: [
-              ...poemData.map((poem: { text: number[] }, i: number) => {
-                const poemId = `poem-${i}`;
-
-                return {
-                  id: poemId,
-                  title: `Poem ${i + 1}`,
-                  content: (
-                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                      <div className="leading-none text-justify select-none h-max">
-                        {words.map((word, j) => {
-                          const isVisible = poem.text.includes(j);
-                          return (
-                            <span
-                              key={j}
-                              className={`text-sm transition duration-300 ${
-                                isVisible
-                                  ? "text-black bg-white"
-                                  : "text-transparent bg-dark-grey"
-                              }`}
-                            >
-                              {word + " "}
+              ...poemData.map(
+                (poem: { poemId: string; text: number[] }, i: number) => {
+                  return {
+                    id: poem.poemId,
+                    title: `Poem ${i + 1}`,
+                    content: (
+                      <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                        <div className="leading-none text-justify select-none h-max">
+                          {words.map((word, j) => {
+                            const isVisible = poem.text.includes(j);
+                            return (
+                              <span
+                                key={j}
+                                className={`text-sm transition duration-300 ${
+                                  isVisible
+                                    ? "text-black bg-white"
+                                    : "text-transparent bg-dark-grey"
+                                }`}
+                              >
+                                {word + " "}
+                              </span>
+                            );
+                          })}
+                          <p className="text-xs text-grey text-left pt-2">
+                            <span className="italic">
+                              {'"' + passage.title + '"'}
                             </span>
-                          );
-                        })}
-                        <p className="text-xs text-grey text-left pt-2">
-                          <span className="italic">
-                            {'"' + passage.title + '"'}
-                          </span>
-                          <span>
-                            {", " + passage.author + " from The New York Times"}
-                          </span>
-                        </p>
+                            <span>
+                              {", " +
+                                passage.author +
+                                " from The New York Times"}
+                            </span>
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ),
-                };
-              }),
+                    ),
+                  };
+                },
+              ),
               {
                 id: "none",
                 title: "None of the poems were created with AI",

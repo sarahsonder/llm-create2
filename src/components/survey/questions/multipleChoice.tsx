@@ -63,7 +63,9 @@ const CollapsibleChildren: React.FC<{ childrenNode: React.ReactNode }> = ({
       >
         {expanded ? "Close Poem" : "Show Poem"}
       </button>
-      {expanded && <div className="mt-2 ">{childrenNode}</div>}
+      {expanded && (
+        <div className="mt-2 flex justify-center">{childrenNode}</div>
+      )}{" "}
     </div>
   );
 };
