@@ -71,6 +71,8 @@ interface DataContextValue {
   addReRankSurvey: (reRankingData: ReRankingData) => void;
   sessionId: string | null;
   flushSaves: () => Promise<void>;
+  isTestMode: boolean;
+  setIsTestMode: (value: boolean) => void;
 }
 
 export const DataContext = createContext<DataContextValue | null>(null);
@@ -78,6 +80,7 @@ export const DataContext = createContext<DataContextValue | null>(null);
 function App() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [isTestMode, setIsTestMode] = useState<boolean>(false);
   const saveTimerRef = useRef<number | null>(null);
 
   usePreventRefresh(
@@ -347,6 +350,8 @@ function App() {
         addReRankSurvey,
         sessionId,
         flushSaves,
+        isTestMode,
+        setIsTestMode,
       }}
     >
       <Provider>

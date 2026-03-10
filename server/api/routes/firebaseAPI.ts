@@ -130,6 +130,7 @@ router.post("/audience/autosave", async (req, res) => {
       8: "poemEvaluation3",
       9: "poemEvaluation4",
       10: "post-survey",
+      11: "thankYou",
     };
 
     const status = data.data?.timeStamps

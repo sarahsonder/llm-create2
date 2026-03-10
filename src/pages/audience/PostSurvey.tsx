@@ -15,7 +15,7 @@ const AudiencePostSurvey = () => {
     throw new Error("Component must be used within a DataContext.Provider");
   }
 
-  const { userData, addPostSurvey, sessionId } = context;
+  const { userData, addPostSurvey, sessionId, isTestMode } = context;
 
   const submitDb = async (answers: any) => {
     if (!userData || !userData.data) {
@@ -59,7 +59,8 @@ const AudiencePostSurvey = () => {
     } catch (error) {
       console.error("Error saving data:", error);
       toaster.create({
-        description: "There was an error submitting your survey. Please try again.",
+        description:
+          "There was an error submitting your survey. Please try again.",
         type: "error",
         duration: 5000,
       });
@@ -68,12 +69,36 @@ const AudiencePostSurvey = () => {
 
   const handleSubmit = async (answers: any) => {
     // Save post-survey answers locally
-    addPostSurvey({
-      postAnswers: answers,
-    });
+    addPostSurvey({ postAnswers: answers });
 
-    // Commit to database
-    await submitDb(answers);
+    if (isTestMode) {
+      // Build updated data with post-survey answers (since state update is async)
+      const updatedData = {
+        ...userData,
+        data: {
+          ...userData?.data,
+          surveyResponse: {
+            ...userData?.data?.surveyResponse,
+            postAnswers: answers,
+          },
+        },
+      };
+      // Just autosave to incomplete sessions, don't commit to main collections
+      await fetch("/api/firebase/audience/autosave", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, data: updatedData }),
+      });
+      toaster.create({
+        description: "Test session saved (not committed to production).",
+        type: "success",
+        duration: 5000,
+      });
+      navigate("/audience/thank-you");
+    } else {
+      // Commit to main database
+      await submitDb(answers);
+    }
   };
 
   return (

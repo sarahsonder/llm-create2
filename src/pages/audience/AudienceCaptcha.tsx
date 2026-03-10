@@ -5,7 +5,6 @@ import { Button, Input } from "@chakra-ui/react";
 import { toaster } from "../../components/ui/toaster";
 import { DataContext } from "../../App";
 import { Passages } from "../../consts/passages";
-const TEST_CAPTCHA = "*TEST";
 
 const Captcha = () => {
   const navigate = useNavigate();
@@ -13,7 +12,7 @@ const Captcha = () => {
   if (!context) {
     throw new Error("Component must be used within a DataContext.Provider");
   }
-  const { userData, addUserData, addRoleSpecificData } = context;
+  const { userData, addUserData, addRoleSpecificData, setIsTestMode } = context;
   const [captchaMessage, setCaptchaMessage] = useState("");
   const [inputCaptcha, setInputCaptcha] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +29,7 @@ const Captcha = () => {
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     for (let i = 0; i < 4; i++) {
       captcha_text += c_chars.charAt(
-        Math.floor(Math.random() * c_chars.length)
+        Math.floor(Math.random() * c_chars.length),
       );
     }
     setCaptchaMessage(captcha_text);
@@ -82,7 +81,8 @@ const Captcha = () => {
         timeStamps: [...(userData?.data?.timeStamps ?? []), new Date()],
       });
       navigate("/consent");
-    } else if (inputCaptcha == TEST_CAPTCHA) {
+    } else if (inputCaptcha === "TEST") {
+      setIsTestMode(true);
       addUserData({ role: "audience" });
       addRoleSpecificData({
         passageId: getRandomPassage(),
