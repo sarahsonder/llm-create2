@@ -119,7 +119,7 @@ const AudienceRanking = () => {
                   id: `${q.id}-poem-${i}`,
                   title: `Poem ${i + 1}`,
                   content: (
-                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                    <div className="w-[350px] h-max flex-col space-y-6 py-4 self-center">
                       <div className="leading-none text-justify select-none h-max">
                         {words.map((word, i) => {
                           const isVisible = poem.text.includes(i);
@@ -165,7 +165,7 @@ const AudienceRanking = () => {
                   id: `q4-poem-${i}`,
                   type: "multipleChoice",
                   children: (
-                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                    <div className="w-[350px] h-max flex-col space-y-6 py-4 self-center">
                       <div className="leading-none text-justify select-none h-max">
                         {words.map((word, i) => {
                           const isVisible = poem.text.includes(i);
