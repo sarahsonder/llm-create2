@@ -67,6 +67,7 @@ export interface Audience {
   passageId: string;
   surveyResponse: AudienceSurvey;
   poemsViewed: string[];
+  poemData: { poemId: string; text: number[]; statement: string }[];
   timeStamps: Date[];
 }
 

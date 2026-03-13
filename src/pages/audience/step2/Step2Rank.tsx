@@ -3,10 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../App";
 import { Passages } from "../../../consts/passages";
-import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceRankingQuestions } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section, SurveyAnswers, RankingData, StatementMatch, PoemRankings } from "../../../types";
+import type {
+  SurveyDefinition,
+  Section,
+  SurveyAnswers,
+  RankingData,
+  StatementMatch,
+  PoemRankings,
+} from "../../../types";
 
 // TODO: Remove - Hard-coded fallback data for standalone rendering/testing
 // const defaultContextValue = {
@@ -40,7 +46,9 @@ type PoemStatementMap = Record<string, string>; // poemId -> correct statement
 const AudienceRanking = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [artistStatements, setArtistStatements] = useState<string[]>([]);
-  const [correctStatements, setCorrectStatements] = useState<PoemStatementMap>({}); // Maps poemId to its correct statement
+  const [correctStatements, setCorrectStatements] = useState<PoemStatementMap>(
+    {},
+  ); // Maps poemId to its correct statement
   const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -53,57 +61,41 @@ const AudienceRanking = () => {
   const { userData, addRoleSpecificData, addRankSurvey } = context;
 
   const passageId = (userData as any)?.data?.passageId || "1";
-  // TODO: Remove hard coded values
-  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["nvDp4FklkwSvxAMsyNqn", "5XWe4xHm6G1e9d43hKW7", "La33yHt4rC5vKg23fs7b", "FbCyvCErYRKrImwaksMZ"];
+  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed;
+  const poemData = (userData as any)?.data?.poemData || [];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
-  const poems = Poems;
 
-  // Fetch artist statements on mount
   useEffect(() => {
-    const fetchArtistStatements = async () => {
-      if (poemsViewed.length === 0) {
-        setArtistStatements(fallbackStatements);
-        setIsLoading(false);
-        return;
+    if (poemData.length === 0) {
+      setArtistStatements(fallbackStatements);
+      setIsLoading(false);
+      return;
+    }
+
+    // Build poemId -> statement mapping from persisted data
+    const statementMap: PoemStatementMap = {};
+    const statements: string[] = [];
+
+    poemData.forEach((p: { poemId: string; statement: string | null }) => {
+      if (p.statement) {
+        statementMap[p.poemId] = p.statement;
+        statements.push(p.statement);
       }
+    });
 
-      try {
-        const response = await fetch("/api/firebase/audience/artist-statements", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ poemIds: poemsViewed }),
-        });
+    setCorrectStatements(statementMap);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch artist statements");
-        }
+    // Shuffle statements for display
+    for (let i = statements.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [statements[i], statements[j]] = [statements[j], statements[i]];
+    }
 
-        const data = await response.json();
-        // Filter out nulls and build the correct statement mapping
-        const validStatements = data.poemStatements.filter(
-          (s: { poemId: string; statement: string } | null) => s !== null
-        ) as { poemId: string; statement: string }[];
-
-        // Build poemId -> statement mapping for correctness checking
-        const statementMap: PoemStatementMap = {};
-        validStatements.forEach((s) => {
-          statementMap[s.poemId] = s.statement;
-        });
-        setCorrectStatements(statementMap);
-
-        // Extract just the statement strings for display options (already shuffled by API)
-        const statements = validStatements.map((s) => s.statement);
-        setArtistStatements(statements.length > 0 ? statements : fallbackStatements);
-      } catch (error) {
-        console.error("Error fetching artist statements:", error);
-        setArtistStatements(fallbackStatements);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchArtistStatements();
+    setArtistStatements(
+      statements.length > 0 ? statements : fallbackStatements,
+    );
+    setIsLoading(false);
   }, []);
 
   // Options for multiple choice: statements + "Unsure"
@@ -122,39 +114,41 @@ const AudienceRanking = () => {
             questions: section.questions.map((q) => {
               if (q.type !== "dragRank") return q;
 
-              const items = poems.map((poem, i) => ({
-                id: `${q.id}-poem-${i}`,
-                title: `Poem ${i + 1}`,
-                content: (
-                  <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                    <div className="leading-none text-justify select-none h-max">
-                      {words.map((word, i) => {
-                        const isVisible = poem.text.includes(i);
-                        return (
-                          <span
-                            key={i}
-                            className={`text-sm transition duration-300 ${
-                              isVisible
-                                ? "text-black bg-white"
-                                : "text-transparent bg-dark-grey"
-                            }`}
-                          >
-                            {word + " "}
+              const items = poemData.map(
+                (poem: { text: number[] }, i: number) => ({
+                  id: `${q.id}-poem-${i}`,
+                  title: `Poem ${i + 1}`,
+                  content: (
+                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, i) => {
+                          const isVisible = poem.text.includes(i);
+                          return (
+                            <span
+                              key={i}
+                              className={`text-sm transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
                           </span>
-                        );
-                      })}
-                      <p className="text-xs text-grey text-left pt-2">
-                        <span className="italic">
-                          {'"' + passage.title + '"'}
-                        </span>
-                        <span>
-                          {", " + passage.author + " from The New York Times"}
-                        </span>
-                      </p>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ),
-              }));
+                  ),
+                }),
+              );
 
               return { ...q, items };
             }),
@@ -165,52 +159,54 @@ const AudienceRanking = () => {
         if (section.id === "section2") {
           return {
             ...section,
-            questions: poems.flatMap((poem, i) => [
-              {
-                id: `q4-poem-${i}`,
-                type: "multipleChoice",
-                children: (
-                  <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                    <div className="leading-none text-justify select-none h-max">
-                      {words.map((word, i) => {
-                        const isVisible = poem.text.includes(i);
-                        return (
-                          <span
-                            key={i}
-                            className={`text-sm transition duration-300 ${
-                              isVisible
-                                ? "text-black bg-white"
-                                : "text-transparent bg-dark-grey"
-                            }`}
-                          >
-                            {word + " "}
+            questions: poemData.flatMap(
+              (poem: { text: number[] }, i: number) => [
+                {
+                  id: `q4-poem-${i}`,
+                  type: "multipleChoice",
+                  children: (
+                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, i) => {
+                          const isVisible = poem.text.includes(i);
+                          return (
+                            <span
+                              key={i}
+                              className={`text-sm transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
                           </span>
-                        );
-                      })}
-                      <p className="text-xs text-grey text-left pt-2">
-                        <span className="italic">
-                          {'"' + passage.title + '"'}
-                        </span>
-                        <span>
-                          {", " + passage.author + " from The New York Times"}
-                        </span>
-                      </p>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ),
-                question: `Poem ${i + 1}`,
-                options: statementOptions,
-                required: true,
-              },
-              {
-                id: `q4-poem-${i}-unsure`,
-                type: "openEnded",
-                question:
-                  "If you selected 'Unsure', please explain why (optional)",
-                required: false,
-                poemId: `poem-${i}`,
-              },
-            ]),
+                  ),
+                  question: `Poem ${i + 1}`,
+                  options: statementOptions,
+                  required: true,
+                },
+                {
+                  id: `q4-poem-${i}-unsure`,
+                  type: "openEnded",
+                  question:
+                    "If you selected 'Unsure', please explain why (optional)",
+                  required: false,
+                  poemId: `poem-${i}`,
+                },
+              ],
+            ),
           };
         }
 
@@ -232,7 +228,7 @@ const AudienceRanking = () => {
 
   useEffect(() => {
     const container = document.querySelector(
-      ".overflow-y-auto"
+      ".overflow-y-auto",
     ) as HTMLElement | null;
     const onScroll = () => {
       if (container) {
@@ -276,22 +272,28 @@ const AudienceRanking = () => {
     };
 
     // Process statement matching answers
-    const statementMatches: StatementMatch[] = poems.map((_, i) => {
-      const poemId = poemsViewed[i] || `poem-${i}`;
-      const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
-      const explanation = (answers[`q4-poem-${i}-unsure`] as string) || undefined;
-      
-      // Check if the chosen statement matches the correct one for this poem
-      const correctStatement = correctStatements[poemId];
-      const isCorrect = chosenStatement !== "Unsure" && chosenStatement === correctStatement;
-      
-      return {
-        poemId,
-        isCorrect,
-        chosenStatement,
-        ...(chosenStatement === "Unsure" && explanation ? { explanation } : {}),
-      };
-    });
+    const statementMatches: StatementMatch[] = poemData.map(
+      (_: unknown, i: number) => {
+        const poemId = poemsViewed[i] || `poem-${i}`;
+        const chosenStatement = (answers[`q4-poem-${i}`] as string) || "";
+        const explanation =
+          (answers[`q4-poem-${i}-unsure`] as string) || undefined;
+
+        // Check if the chosen statement matches the correct one for this poem
+        const correctStatement = correctStatements[poemId];
+        const isCorrect =
+          chosenStatement !== "Unsure" && chosenStatement === correctStatement;
+
+        return {
+          poemId,
+          isCorrect,
+          chosenStatement,
+          ...(chosenStatement === "Unsure" && explanation
+            ? { explanation }
+            : {}),
+        };
+      },
+    );
 
     // Save ranking data
     const rankingData: RankingData = {
@@ -350,7 +352,7 @@ const AudienceRanking = () => {
         <button
           onClick={() => {
             const container = document.querySelector(
-              ".overflow-y-auto"
+              ".overflow-y-auto",
             ) as HTMLElement | null;
             if (container) {
               container.scrollTo({ top: 0, behavior: "smooth" });
