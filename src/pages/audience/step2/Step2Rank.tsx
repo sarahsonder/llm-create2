@@ -119,14 +119,14 @@ const AudienceRanking = () => {
                   id: `${q.id}-poem-${i}`,
                   title: `Poem ${i + 1}`,
                   content: (
-                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                      <div className="leading-none text-justify select-none h-max">
+                    <div className="w-[350px] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="font-serif leading-none text-justify select-none h-max">
                         {words.map((word, i) => {
                           const isVisible = poem.text.includes(i);
                           return (
                             <span
                               key={i}
-                              className={`text-sm transition duration-300 ${
+                              className={`text-sm md:text-base transition duration-300 ${
                                 isVisible
                                   ? "text-black bg-white"
                                   : "text-transparent bg-dark-grey"
@@ -165,14 +165,14 @@ const AudienceRanking = () => {
                   id: `q4-poem-${i}`,
                   type: "multipleChoice",
                   children: (
-                    <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
+                    <div className="font-serif w-[350px] h-max flex-col space-y-6 py-4 self-center">
                       <div className="leading-none text-justify select-none h-max">
                         {words.map((word, i) => {
                           const isVisible = poem.text.includes(i);
                           return (
                             <span
                               key={i}
-                              className={`text-sm transition duration-300 ${
+                              className={`text-sm md:text-base transition duration-300 ${
                                 isVisible
                                   ? "text-black bg-white"
                                   : "text-transparent bg-dark-grey"
@@ -329,9 +329,9 @@ const AudienceRanking = () => {
       description="Now that you have read all the blackout poems, please answer the following questions about them."
     >
       {/* Top Controls */}
-      <div className="w-[50vh] md:w-[60vh] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
+      <div className="font-serif w-[350px] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
         <p
-          className="text-main text-justify text-sm md:text-base select-none"
+          className="font-serif text-main text-justify text-sm md:text-base select-none"
           onCopy={(e) => e.preventDefault()}
         >
           {passage.text}

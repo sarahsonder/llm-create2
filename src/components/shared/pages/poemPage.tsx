@@ -38,7 +38,7 @@ function PoemPageTemplate({
                 </div>
                 <p className="text-h2"> Your Final Poem</p>
               </div>
-              <div className="leading-normal text-justify select-none h-max">
+              <div className="font-serif leading-normal text-justify select-none h-max">
                 {words.map((word, i) => {
                   const isVisible = visibleIndexes.includes(i);
                   return (

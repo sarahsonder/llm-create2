@@ -18,7 +18,7 @@ const MultipleChoice: React.FC<Props> = ({ question, value, onChange }) => {
           <span className="text-red-700">{question.required ? "*" : ""}</span>
         </p>
         {question.children && (
-          <div className="ml-2">
+          <div className="w-full">
             <CollapsibleChildren childrenNode={question.children} />
           </div>
         )}

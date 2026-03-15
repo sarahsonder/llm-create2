@@ -62,39 +62,41 @@ const AudienceReRanking = () => {
             questions: section.questions.map((q) => {
               if (q.type !== "dragRank") return q;
 
-              const items = poemData.map((poem: { text: number[] }, i: number) => ({
-                id: `${q.id}-poem-${i}`,
-                title: `Poem ${i + 1}`,
-                content: (
-                  <div className="w-[50vh] h-max flex-col space-y-6 py-4 self-center">
-                    <div className="leading-none text-justify select-none h-max">
-                      {words.map((word, i) => {
-                        const isVisible = poem.text.includes(i);
-                        return (
-                          <span
-                            key={i}
-                            className={`text-sm transition duration-300 ${
-                              isVisible
-                                ? "text-black bg-white"
-                                : "text-transparent bg-dark-grey"
-                            }`}
-                          >
-                            {word + " "}
+              const items = poemData.map(
+                (poem: { text: number[] }, i: number) => ({
+                  id: `${q.id}-poem-${i}`,
+                  title: `Poem ${i + 1}`,
+                  content: (
+                    <div className="font-serif w-[350px] h-max flex-col space-y-6 py-4 self-center">
+                      <div className="leading-none text-justify select-none h-max">
+                        {words.map((word, i) => {
+                          const isVisible = poem.text.includes(i);
+                          return (
+                            <span
+                              key={i}
+                              className={`text-sm md:text-base transition duration-300 ${
+                                isVisible
+                                  ? "text-black bg-white"
+                                  : "text-transparent bg-dark-grey"
+                              }`}
+                            >
+                              {word + " "}
+                            </span>
+                          );
+                        })}
+                        <p className="text-xs text-grey text-left pt-2">
+                          <span className="italic">
+                            {'"' + passage.title + '"'}
                           </span>
-                        );
-                      })}
-                      <p className="text-xs text-grey text-left pt-2">
-                        <span className="italic">
-                          {'"' + passage.title + '"'}
-                        </span>
-                        <span>
-                          {", " + passage.author + " from The New York Times"}
-                        </span>
-                      </p>
+                          <span>
+                            {", " + passage.author + " from The New York Times"}
+                          </span>
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ),
-              }));
+                  ),
+                }),
+              );
 
               return { ...q, items };
             }),
