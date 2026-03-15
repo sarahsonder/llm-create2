@@ -37,12 +37,12 @@ const AudiencePassage = () => {
     >
       <div className="w-[400px] md:w-[500px] h-max flex-col space-y-6 pt-4 md:pt-8 self-center">
         <p
-          className="text-main text-justify text-sm md:text-base select-none"
+          className="font-serif text-main text-justify text-sm md:text-base select-none"
           onCopy={(e) => e.preventDefault()}
         >
           {passage.text}
         </p>
-        <p className="text-xs text-grey text-left pt-2">
+        <p className="font-serif text-xs text-grey text-left pt-2">
           <span className="italic">{'"' + passage.title + '"'}</span>
           <span>{", " + passage.author + " from The New York Times"}</span>
         </p>

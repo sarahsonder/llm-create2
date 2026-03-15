@@ -101,8 +101,8 @@ const AudienceAI = () => {
                     id: poem.poemId,
                     title: `Poem ${i + 1}`,
                     content: (
-                      <div className="w-[350px] h-max flex-col space-y-6 py-4 self-center">
-                        <div className="font-serif leading-none text-justify select-none h-max">
+                      <div className="font-serif w-[350px] h-max flex-col space-y-6 py-4 self-center">
+                        <div className="leading-none text-justify select-none h-max">
                           {words.map((word, j) => {
                             const isVisible = poem.text.includes(j);
                             return (
@@ -162,8 +162,8 @@ const AudienceAI = () => {
       title={`Step 2: Which poems were created with AI?`}
       description="During the creation of the blackout poems, some artists had the option to create with the assistance of an AI tool. Please review each poem and indicate which poem(s) you believe were created with AI assistance."
     >
-      <div className="w-[300px] md:w-[600px] h-max flex-col space-y-6 py-4 md:py-8 self-center">
-        <div className="font-serif leading-none text-justify select-none h-max">
+      <div className="font-serif w-[300px] md:w-[600px] h-max flex-col space-y-6 py-4 md:py-8 self-center">
+        <div className="leading-none text-justify select-none h-max">
           {words.map((word, i) => {
             return (
               <span
