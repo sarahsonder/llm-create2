@@ -139,7 +139,7 @@ const DragRank: React.FC<Props> = ({ question, value = [], onChange }) => {
               </div>
 
               {expanded[id] && item.content && (
-                <div className="mt-2 text-sm text-sub flex justify-center">
+                <div className="mt-2 flex justify-center">
                   {item.content}
                 </div>
               )}

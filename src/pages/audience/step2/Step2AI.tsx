@@ -74,7 +74,7 @@ const AudienceReRanking = () => {
                           return (
                             <span
                               key={i}
-                              className={`text-sm transition duration-300 ${
+                              className={`text-sm md:text-base transition duration-300 ${
                                 isVisible
                                   ? "text-black bg-white"
                                   : "text-transparent bg-dark-grey"
