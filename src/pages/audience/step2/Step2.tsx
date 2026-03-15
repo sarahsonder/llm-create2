@@ -166,7 +166,7 @@ const AudiencePoems = () => {
         </div>
       </div>
       <div className="w-[350px] h-max flex-col space-y-6 py-4 md:py-8 self-center">
-        <div className="leading-none text-justify select-none h-max">
+        <div className="font-serif leading-none text-justify select-none h-max">
           {words.map((word, i) => {
             const isVisible = poems[currPoem].text.includes(i);
             return (
