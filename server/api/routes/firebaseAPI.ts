@@ -39,9 +39,11 @@ interface AudienceCandidate {
   };
   selectedWordIndexes: number[];
   statement: string;
+  completedAt: number;
+  hasProlificId: boolean;
 }
 
-const shuffle = <T,>(items: T[]): T[] => {
+const shuffle = <T>(items: T[]): T[] => {
   const copy = [...items];
   for (let index = copy.length - 1; index > 0; index -= 1) {
     const otherIndex = Math.floor(Math.random() * (index + 1));
@@ -113,12 +115,34 @@ const tokenize = (text: string) =>
     (token) => token.length > 2,
   );
 
+// The artist instructions ask for the poem's intended meaning "in your own
+// words rather than quoting lines from the poem" — some submissions just
+// paraphrase or lift the source passage instead. Those make nonsensical
+// decoys (e.g. a statement about cows/fields showing up as an option for an
+// unrelated passage), so they're excluded from the candidate pool entirely,
+// not just deprioritized by decoyMatchScore.
+const isQuotingPassage = (statement: string, passageText: string) => {
+  const statementTokens = tokenize(statement);
+  if (statementTokens.length < 8) return false;
+  const passageTokens = new Set(tokenize(passageText));
+  const overlap = statementTokens.filter((token) =>
+    passageTokens.has(token),
+  ).length;
+  return overlap / statementTokens.length >= 0.5;
+};
+
 const statementFeatures = (statement: string, poemText: string) => {
   const statementTokens = tokenize(statement);
   const poemTokens = new Set(tokenize(poemText));
-  const overlap = statementTokens.filter((token) => poemTokens.has(token)).length;
-  const positive = statementTokens.filter((token) => POSITIVE_WORDS.has(token)).length;
-  const negative = statementTokens.filter((token) => NEGATIVE_WORDS.has(token)).length;
+  const overlap = statementTokens.filter((token) =>
+    poemTokens.has(token),
+  ).length;
+  const positive = statementTokens.filter((token) =>
+    POSITIVE_WORDS.has(token),
+  ).length;
+  const negative = statementTokens.filter((token) =>
+    NEGATIVE_WORDS.has(token),
+  ).length;
   const specificTokenShare = statementTokens.length
     ? statementTokens.filter((token) => !GENERIC_STATEMENT_WORDS.has(token))
         .length / statementTokens.length
@@ -192,10 +216,25 @@ const loadAudienceCandidates = async (): Promise<AudienceCandidate[]> => {
         !passage?.title ||
         !passage?.author ||
         !statement ||
-        !Array.isArray(selectedWordIndexes)
+        !Array.isArray(selectedWordIndexes) ||
+        isQuotingPassage(statement, passage.text)
       ) {
         return null;
       }
+
+      const timestamps = artistData.timestamps;
+      const lastTimestamp = Array.isArray(timestamps)
+        ? timestamps[timestamps.length - 1]
+        : null;
+      const completedAt =
+        lastTimestamp && typeof lastTimestamp.toMillis === "function"
+          ? lastTimestamp.toMillis()
+          : lastTimestamp instanceof Date
+            ? lastTimestamp.getTime()
+            : 0;
+      const hasProlificId =
+        typeof artistData.prolific?.prolificPid === "string" &&
+        artistData.prolific.prolificPid.trim().length > 0;
 
       return {
         id: poemDoc.id,
@@ -204,6 +243,8 @@ const loadAudienceCandidates = async (): Promise<AudienceCandidate[]> => {
         passage,
         selectedWordIndexes: selectedWordIndexes.filter(Number.isInteger),
         statement,
+        completedAt,
+        hasProlificId,
       } satisfies AudienceCandidate;
     }),
   );
@@ -336,62 +377,95 @@ router.post("/artist/commit-session", async (req, res) => {
 });
 
 // Build a fresh audience assignment: a passage with a balanced pool of real
-// artist submissions, 4 focal poems (2 LLM + 2 NO_AI), and for each one a
-// set of difficulty-matched decoy statements alongside the real one.
+// artist submissions, 4 focal poems, and for each one a set of difficulty-
+// matched decoy statements alongside the real one. Normally that's 2 LLM +
+// 2 NO_AI from a passage-stratified random pick — see the TEMPORARY note
+// below for the current override.
 router.post("/audience-assignment", async (_req, res) => {
   try {
     const candidates = await loadAudienceCandidates();
     const candidatesByPassage = new Map<string, AudienceCandidate[]>();
     candidates.forEach((candidate) => {
-      const passageCandidates = candidatesByPassage.get(candidate.passageId) ?? [];
+      const passageCandidates =
+        candidatesByPassage.get(candidate.passageId) ?? [];
       passageCandidates.push(candidate);
       candidatesByPassage.set(candidate.passageId, passageCandidates);
     });
 
-    const eligiblePassages = shuffle(
-      [...candidatesByPassage.entries()].filter(([, passageCandidates]) => {
-        const llmCount = passageCandidates.filter(
-          (candidate) => candidate.condition === "LLM",
-        ).length;
-        const noAiCount = passageCandidates.filter(
-          (candidate) => candidate.condition === "NO_AI",
-        ).length;
-        return llmCount >= 2 && noAiCount >= 2 && passageCandidates.length >= 7;
-      }),
-    );
+    // TEMPORARY: for the time being, only assign from "nyt-4" ("Yet Another
+    // Pretty Face", Christopher Wallace), using its most recently completed
+    // Prolific-sourced submissions (hasProlificId), with a 3 LLM / 1 NO_AI
+    // split instead of the usual 2/2. Decoys are NOT pulled from the wider
+    // candidate pool at all (real submissions for other passages can be
+    // wildly off-topic and make nonsensical decoys) — each poem's decoy
+    // options are only the *other three* focal poems' own statements, plus
+    // a hand-written static pool. To restore normal passage-stratified
+    // random assignment across the whole pool, delete this block and the
+    // TEMP_PASSAGE_ID-based checks below it, and restore the
+    // eligiblePassages + 2/2-split focalCandidates + same-passage
+    // decoyCandidates logic.
+    const TEMP_PASSAGE_ID = "nyt-4";
+    const TEMP_LLM_COUNT = 3;
+    const TEMP_NO_AI_COUNT = 1;
 
-    if (eligiblePassages.length === 0) {
+    const passageId = TEMP_PASSAGE_ID;
+    const passageCandidates = (candidatesByPassage.get(passageId) ?? []).filter(
+      (candidate) => candidate.hasProlificId,
+    );
+    const llmCandidates = passageCandidates
+      .filter((candidate) => candidate.condition === "LLM")
+      .sort((a, b) => b.completedAt - a.completedAt);
+    const noAiCandidates = passageCandidates
+      .filter((candidate) => candidate.condition === "NO_AI")
+      .sort((a, b) => b.completedAt - a.completedAt);
+
+    if (
+      llmCandidates.length < TEMP_LLM_COUNT ||
+      noAiCandidates.length < TEMP_NO_AI_COUNT
+    ) {
       return res.status(409).json({
         code: "INSUFFICIENT_AUDIENCE_POOL",
-        error:
-          "No current source passage has four balanced focal poems and three same-source decoys",
+        error: `Not enough completed submissions for "${passageId}" yet (need ${TEMP_LLM_COUNT} LLM + ${TEMP_NO_AI_COUNT} NO_AI).`,
       });
     }
 
-    const [passageId, passageCandidates] = eligiblePassages[0];
     const tutorialPassageId = shuffle(
       AUDIENCE_PASSAGE_ID_LIST.filter(
         (candidatePassageId) => candidatePassageId !== passageId,
       ),
     )[0];
     const focalCandidates = shuffle([
-      ...shuffle(
-        passageCandidates.filter((candidate) => candidate.condition === "LLM"),
-      ).slice(0, 2),
-      ...shuffle(
-        passageCandidates.filter((candidate) => candidate.condition === "NO_AI"),
-      ).slice(0, 2),
+      ...llmCandidates.slice(0, TEMP_LLM_COUNT),
+      ...noAiCandidates.slice(0, TEMP_NO_AI_COUNT),
     ]);
-    const focalIds = new Set(focalCandidates.map((candidate) => candidate.id));
-    const decoyCandidates = passageCandidates.filter(
-      (candidate) => !focalIds.has(candidate.id),
+    // Hand-written, deliberately vague decoy statements. Only `id` and
+    // `statement` are used below, so these mix freely with real candidates.
+    const TEMP_STATIC_DECOY_STATEMENTS = [
+      "I wanted the poem to express coming into adulthood as someone who doesn't feel like they are pretty, as someone who is ashamed of their upbringing.",
+      "I was trying to convey growth and expression.",
+      "I wanted to express the feeling of desire without action. Someone yearning and desperate for something without ever trying to achieve it.",
+      "I want the poem to be whimsical and express a dream-like scenario.",
+      "I wanted to express trying and dreaming.",
+      "Being bullied by other girls yet still wanting to be immortal.",
+    ];
+    const staticDecoyCandidates = TEMP_STATIC_DECOY_STATEMENTS.map(
+      (statement, index) => ({
+        id: `temp-static-decoy-${index + 1}`,
+        statement,
+      }),
     );
-
     const statementTrials = focalCandidates.map((focal) => {
       const poemText = focal.selectedWordIndexes
         .map((index) => focal.passage.text.split(" ")[index])
         .filter(Boolean)
         .join(" ");
+      // Decoy options for this poem: the other three focal poems' own
+      // statements, plus the static pool — nothing from the wider candidate
+      // pool of unrelated real submissions.
+      const decoyCandidates: { id: string; statement: string }[] = [
+        ...focalCandidates.filter((candidate) => candidate.id !== focal.id),
+        ...staticDecoyCandidates,
+      ];
       const decoys = [...decoyCandidates]
         .sort(
           (left, right) =>
