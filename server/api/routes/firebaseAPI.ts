@@ -115,6 +115,22 @@ const tokenize = (text: string) =>
     (token) => token.length > 2,
   );
 
+// The artist instructions ask for the poem's intended meaning "in your own
+// words rather than quoting lines from the poem" — some submissions just
+// paraphrase or lift the source passage instead. Those make nonsensical
+// decoys (e.g. a statement about cows/fields showing up as an option for an
+// unrelated passage), so they're excluded from the candidate pool entirely,
+// not just deprioritized by decoyMatchScore.
+const isQuotingPassage = (statement: string, passageText: string) => {
+  const statementTokens = tokenize(statement);
+  if (statementTokens.length < 8) return false;
+  const passageTokens = new Set(tokenize(passageText));
+  const overlap = statementTokens.filter((token) =>
+    passageTokens.has(token),
+  ).length;
+  return overlap / statementTokens.length >= 0.5;
+};
+
 const statementFeatures = (statement: string, poemText: string) => {
   const statementTokens = tokenize(statement);
   const poemTokens = new Set(tokenize(poemText));
@@ -200,7 +216,8 @@ const loadAudienceCandidates = async (): Promise<AudienceCandidate[]> => {
         !passage?.title ||
         !passage?.author ||
         !statement ||
-        !Array.isArray(selectedWordIndexes)
+        !Array.isArray(selectedWordIndexes) ||
+        isQuotingPassage(statement, passage.text)
       ) {
         return null;
       }
@@ -378,16 +395,15 @@ router.post("/audience-assignment", async (_req, res) => {
     // TEMPORARY: for the time being, only assign from "nyt-4" ("Yet Another
     // Pretty Face", Christopher Wallace), using its most recently completed
     // Prolific-sourced submissions (hasProlificId), with a 3 LLM / 1 NO_AI
-    // split instead of the usual 2/2. Decoys are NOT restricted to
-    // Prolific-sourced submissions — they're pulled from every other poem's
-    // statement (any passage, any condition) plus a hand-written static
-    // pool, since "nyt-4" alone doesn't have enough same-passage distractors
-    // yet — decoyMatchScore only compares statement style, not passage
-    // identity, so these still work as long as they read vaguely enough. To
-    // restore normal passage-stratified random assignment across the whole
-    // pool, delete this block and the TEMP_PASSAGE_ID-based checks below it,
-    // and restore the eligiblePassages + 2/2-split focalCandidates +
-    // same-passage decoyCandidates logic.
+    // split instead of the usual 2/2. Decoys are NOT pulled from the wider
+    // candidate pool at all (real submissions for other passages can be
+    // wildly off-topic and make nonsensical decoys) — each poem's decoy
+    // options are only the *other three* focal poems' own statements, plus
+    // a hand-written static pool. To restore normal passage-stratified
+    // random assignment across the whole pool, delete this block and the
+    // TEMP_PASSAGE_ID-based checks below it, and restore the
+    // eligiblePassages + 2/2-split focalCandidates + same-passage
+    // decoyCandidates logic.
     const TEMP_PASSAGE_ID = "nyt-4";
     const TEMP_LLM_COUNT = 3;
     const TEMP_NO_AI_COUNT = 1;
@@ -422,9 +438,7 @@ router.post("/audience-assignment", async (_req, res) => {
       ...llmCandidates.slice(0, TEMP_LLM_COUNT),
       ...noAiCandidates.slice(0, TEMP_NO_AI_COUNT),
     ]);
-    const focalIds = new Set(focalCandidates.map((candidate) => candidate.id));
-    // Hand-written, deliberately vague decoy statements to supplement the
-    // pool of other poems' statements while it's still thin. Only `id` and
+    // Hand-written, deliberately vague decoy statements. Only `id` and
     // `statement` are used below, so these mix freely with real candidates.
     const TEMP_STATIC_DECOY_STATEMENTS = [
       "I wanted the poem to express coming into adulthood as someone who doesn't feel like they are pretty, as someone who is ashamed of their upbringing.",
@@ -440,16 +454,18 @@ router.post("/audience-assignment", async (_req, res) => {
         statement,
       }),
     );
-    const decoyCandidates: { id: string; statement: string }[] = [
-      ...candidates.filter((candidate) => !focalIds.has(candidate.id)),
-      ...staticDecoyCandidates,
-    ];
-
     const statementTrials = focalCandidates.map((focal) => {
       const poemText = focal.selectedWordIndexes
         .map((index) => focal.passage.text.split(" ")[index])
         .filter(Boolean)
         .join(" ");
+      // Decoy options for this poem: the other three focal poems' own
+      // statements, plus the static pool — nothing from the wider candidate
+      // pool of unrelated real submissions.
+      const decoyCandidates: { id: string; statement: string }[] = [
+        ...focalCandidates.filter((candidate) => candidate.id !== focal.id),
+        ...staticDecoyCandidates,
+      ];
       const decoys = [...decoyCandidates]
         .sort(
           (left, right) =>
