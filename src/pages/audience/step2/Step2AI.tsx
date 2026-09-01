@@ -3,10 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../../../App";
 import { Passages } from "../../../consts/passages";
-import { Poems } from "../../../consts/poems";
 import SurveyScroll from "../../../components/survey/surveyScroll";
 import { AudienceReRankingQuestions } from "../../../consts/surveyQuestions";
-import type { SurveyDefinition, Section, SurveyAnswers, PoemRankings, ReRankingData } from "../../../types";
+import type {
+  SurveyDefinition,
+  Section,
+  SurveyAnswers,
+  PoemRankings,
+  ReRankingData,
+} from "../../../types";
 
 // Dummy data for standalone rendering/testing
 // const defaultContextValue = {
@@ -39,12 +44,11 @@ const AudienceReRanking = () => {
   const { userData, addRoleSpecificData, addReRankSurvey } = context;
   // const { userData, addRoleSpecificData, addReRankSurvey } = context ?? defaultContextValue;
 
-
   const passageId = (userData as any)?.data?.passageId || "1";
-  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || ["poem1", "poem2", "poem3", "poem4"];
+  const poemsViewed: string[] = (userData as any)?.data?.poemsViewed || [];
+  const poemData = (userData as any)?.data?.poemData || [];
 
   const passage = Passages.find((p) => p.id === passageId) || Passages[0];
-  const poems = Poems;
   const surveyWithItems = (() => {
     const words = passage.text.split(" ");
 
@@ -58,7 +62,7 @@ const AudienceReRanking = () => {
             questions: section.questions.map((q) => {
               if (q.type !== "dragRank") return q;
 
-              const items = poems.map((poem, i) => ({
+              const items = poemData.map((poem: { text: number[] }, i: number) => ({
                 id: `${q.id}-poem-${i}`,
                 title: `Poem ${i + 1}`,
                 content: (
@@ -173,7 +177,7 @@ const AudienceReRanking = () => {
   return (
     <PageTemplate
       title={`Step 2: Re-rank the poems`}
-      description="Below, we have indicated  which poem(s) were created with AI assistance. If you would like to re-rank your poems please do so."
+      description="Knowing some of these poems may have been made with AI assistance, if you would like to re-rank your poems please do so."
     >
       <div></div>
 

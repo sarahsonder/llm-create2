@@ -343,7 +343,11 @@ router.post("/artist/commit-session", async (req, res) => {
 
     batch.set(artistRef, artist);
     batch.set(surveyRef, { artistId: artistRef.id, ...surveyData });
-    batch.set(poemRef, { artistId: artistRef.id, ...poemData });
+    batch.set(poemRef, {
+      artistId: artistRef.id,
+      ...poemData,
+      random: Math.random(),
+    });
     batch.delete(incompleteRef);
 
     await batch.commit();

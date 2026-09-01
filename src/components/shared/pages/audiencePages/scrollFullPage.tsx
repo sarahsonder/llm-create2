@@ -234,8 +234,8 @@ function PageTemplate({
                   (left == undefined
                     ? ` justify-center`
                     : left
-                    ? ` justify-start`
-                    : ` justify-end`)
+                      ? ` justify-start`
+                      : ` justify-end`)
                 }
               >
                 <Button className="btn-primary" onClick={nextButton.action}>

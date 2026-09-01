@@ -77,7 +77,7 @@ export default MultipleChoice;
 const CollapsibleChildren: React.FC<{ childrenNode: React.ReactNode }> = ({
   childrenNode,
 }) => {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   return (
     <div className="mb-2 w-full">
@@ -88,7 +88,9 @@ const CollapsibleChildren: React.FC<{ childrenNode: React.ReactNode }> = ({
       >
         {expanded ? "Close Poem" : "Show Poem"}
       </button>
-      {expanded && <div className="mt-2 ">{childrenNode}</div>}
+      {expanded && (
+        <div className="mt-2 flex justify-center">{childrenNode}</div>
+      )}{" "}
     </div>
   );
 };
