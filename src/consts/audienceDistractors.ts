@@ -24,7 +24,7 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
     "This is about a fragile body finally catching up to a world it's only just starting to notice.",
     "A private thrill, kept quiet on purpose",
     "Capture the difference between looking and truly listening",
-    "I wanted the poem to feel like a held breath, even if it never says so directly.",
+    "I wanted the poem to feel like a held breath",
     "I kept coming back to the idea of tiptoeing somewhere you're not sure you're allowed to be.",
   ],
   // Ballet Shoes - domestic joy, unexpected contentment
@@ -42,10 +42,10 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
     "I kept thinking about the pull of imagining a future bigger than the room you're sitting in while choosing these words.",
     "This is about drifting into hope while everyone around you is talking about small things.",
     "I wanted to express the gap between practical chatter and a private, sweeping sense of possibility.",
-    "My goal was to capture daydreams that feel like certainty, without spelling it out.",
+    "My goal was to capture daydreams that feel like certainty.",
     "Youth as permission to imagine.",
     "Mostly, this poem is quiet ambition dressed up as idle conversation.",
-    "I wanted the poem to feel like watching a sunset and mistaking it for a promise, even if it never says so directly.",
+    "I wanted the poem to feel like watching a sunset and mistaking it for a promise.",
   ],
   // The God of Small Things - homecoming, decay and renewal, weather's power
   "1": [
@@ -64,7 +64,7 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
     "My goal was to capture the mismatch between what a person is capable of and the life circumstance hands them",
     "Too much feeling in too little room.",
     "I kept thinking about the difference between grand emotion and everyday warmth",
-    "I wanted the poem to feel like a fire kept banked instead of let out, even if it never says so directly.",
+    "I wanted the poem to feel like a fire kept banked instead of let out.",
     "this poem is quiet devotion with nowhere left to go.",
   ],
   // "If It's Possible, It Happened" - chance, parallel fates, mortality
@@ -101,7 +101,7 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
   "nyt-4": [
     "I was trying to convey how being looked at constantly can start to feel like a kind of erasure.",
     "this is about the pressure of being ranked and measured against everyone else in the room.",
-    "My goal was to capture what it costs to keep reinventing yourself for an audience that's always watching, without spelling it out.",
+    "My goal was to capture what it costs to keep reinventing yourself for an audience that's always watching",
     "Famous for a moment, but judged forever.",
     "I wanted to express the difference between being seen and being truly known.",
     "I wanted the poem to feel like flipping through a magazine and forgetting the face on the cover by the next page",
