@@ -41,7 +41,7 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
   "2": [
     "I kept thinking about the pull of imagining a future bigger than the room you're sitting in while choosing these words",
     "This is about drifting into hope while everyone around you is talking about small things.",
-    "I wanted to express the gap between practical chatter and a privatesweeping sense of possibility",
+    "I wanted to express the gap between practical chatter and a private sweeping sense of possibility",
     "my idea was to capture daydreams that feel like certainty",
     "Youth is the permission to imagine",
     "this poem is quiet ambition dressed up as idle conversation.",
@@ -64,7 +64,7 @@ export const PASSAGE_DISTRACTOR_STATEMENTS: Record<string, string[]> = {
     "My goal was to capture the mismatch between what a person is capable of and the life circumstance hands them",
     "Too much feeling in too little room.",
     "I kept thinking about the difference between grand emotion and everyday warmth",
-    "I wanted the poem to feel like a fire kept banked instead of let ou.",
+    "I wanted the poem to feel like a fire kept banked instead of let out.",
     "this poem is quiet devotion with nowhere left to go.",
   ],
   // "If It's Possible, It Happened" - chance, parallel fates, mortality
